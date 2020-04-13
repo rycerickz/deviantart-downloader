@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
@@ -67,9 +68,9 @@ public class MainApplication extends Application {
     private void initializeInterfaceLayout() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("/layouts/application_interface.fxml"));
-        AnchorPane anchorPaneIntercace = fxmlLoader.load();
+        VBox vBoxIntercace = fxmlLoader.load();
 
-        getBorderPaneMain().setCenter(anchorPaneIntercace);
+        getBorderPaneMain().setCenter(vBoxIntercace);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
