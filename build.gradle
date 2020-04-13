@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group 'com.com'
+version '1.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    
+    //================================================================================================================//
+    // 
+    // Gson.
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+    // Lombok.
+    compileOnly 'org.projectlombok:lombok:1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+    //================================================================================================================//
+
+}
