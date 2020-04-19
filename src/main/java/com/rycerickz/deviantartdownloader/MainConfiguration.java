@@ -29,7 +29,7 @@ public class MainConfiguration {
 
     public static final String CUSTOMER_ID = "11922";
     public static final String CUSTOMER_SECRET = "9c7a17fad5344add0fa729f3373f4644";
-    public static final String DEFAULT_USER = "rycerickz";
+    public static final String DEFAULT_USER = "steamboy33";
 
     /*----------------------------------------------------------------------------------------------------------------*/
 

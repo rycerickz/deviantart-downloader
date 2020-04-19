@@ -6,6 +6,7 @@ package com.rycerickz.deviantartdownloader.app.controllers;
 
 import com.google.gson.internal.$Gson$Preconditions;
 import com.jfoenix.controls.JFXMasonryPane;
+import com.jfoenix.controls.JFXScrollPane;
 import com.rycerickz.deviantartdownloader.app.components.apis.DeviantartRestRequest;
 import com.rycerickz.deviantartdownloader.app.schemes.EntityManager;
 import com.rycerickz.deviantartdownloader.app.schemes.entities.Document;
@@ -19,6 +20,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
@@ -26,6 +28,8 @@ import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import lombok.Setter;
 import okhttp3.Call;
@@ -51,6 +55,9 @@ public class AnchorPaneUserController extends TemplateController {
 
     @FXML
     private JFXMasonryPane jfxMasonryPaneGallery;
+
+    @FXML
+    private ScrollPane scrollPaneGallery;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -129,8 +136,18 @@ public class AnchorPaneUserController extends TemplateController {
                     getTreeItemRoot().getChildren().add(treeItemDocument);
 
                     Image image = new Image(new ByteArrayInputStream(bytes));
+
                     ImageView imageView = new ImageView(image);
-                    getJfxMasonryPaneGallery().getChildren().add(imageView);
+                    imageView.setFitWidth(Math.min(400, image.getWidth()));
+                    imageView.setPreserveRatio(true);
+
+                    Pane pane = new Pane();
+                    pane.getChildren().add(imageView);
+
+                    getJfxMasonryPaneGallery().getChildren().add(pane);
+
+                    getScrollPaneGallery().requestLayout();
+                    JFXScrollPane.smoothScrolling(getScrollPaneGallery());
                 });
             }
         });

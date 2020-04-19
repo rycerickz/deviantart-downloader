@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXMasonryPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -18,10 +20,15 @@
                         </TreeTableView>
                     </children>
                 </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="641.0" prefWidth="405.0">
-               <children>
-                  <JFXMasonryPane fx:id="jfxMasonryPaneGallery" HSpacing="10.0" VSpacing="10.0" layoutX="91.0" layoutY="267.0" prefHeight="641.3333333333334" prefWidth="355.3333333333333" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-               </children>
+                <AnchorPane>
+                    <children>
+                        <ScrollPane fx:id="scrollPaneGallery" fitToWidth="true" hbarPolicy="NEVER" prefHeight="160.0" prefWidth="136.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <JFXMasonryPane fx:id="jfxMasonryPaneGallery" HSpacing="10.0" VSpacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <padding>
+                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                        </padding></JFXMasonryPane>
+                        </ScrollPane>
+                    </children>
                 </AnchorPane>
             </items>
         </SplitPane>
