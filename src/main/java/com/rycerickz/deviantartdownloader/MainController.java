@@ -16,6 +16,7 @@ import com.rycerickz.deviantartdownloader.core.templates.TemplateController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +27,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.jfoenix.controls.JFXSpinner.INDETERMINATE_PROGRESS;
 import static com.rycerickz.deviantartdownloader.MainConfiguration.*;
 
 /*====================================================================================================================*/
@@ -47,6 +49,9 @@ public class MainController extends TemplateController {
 
     @FXML
     private Button buttonScan;
+
+    @FXML
+    private ProgressBar progressBarLoading;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -70,6 +75,9 @@ public class MainController extends TemplateController {
     @Override
     protected void initializeViews() {
         super.initializeViews();
+
+        getProgressBarLoading().setProgress(INDETERMINATE_PROGRESS);
+        getProgressBarLoading().setVisible(false);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -90,6 +98,8 @@ public class MainController extends TemplateController {
     /*----------------------------------------------------------------------------------------------------------------*/
 
     private void tryLogin() {
+        getProgressBarLoading().setVisible(true);
+
         // TODO: validar la expiracion del token.
         HashMap<String, String> params = new HashMap();
         params.put("client_id", getTextFieldClientId().getText());
@@ -110,6 +120,7 @@ public class MainController extends TemplateController {
 
             @Override
             public void error(Call call, String response) {
+                getProgressBarLoading().setVisible(false);
                 Logs.error(response);
                 // TODO: manejar respuesta.
             }
@@ -146,12 +157,14 @@ public class MainController extends TemplateController {
                     tryGetGallery();
 
                 }else{
+                    getProgressBarLoading().setVisible(false);
                     setOffset(0);
                 }
             }
 
             @Override
             public void error(Call call, String response) {
+                getProgressBarLoading().setVisible(false);
                 Logs.error(response);
                 // TODO: manejar respuesta.
             }
