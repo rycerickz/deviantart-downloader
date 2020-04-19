@@ -82,15 +82,22 @@ public class MainController extends TemplateController {
     /*----------------------------------------------------------------------------------------------------------------*/
 
     private int offset;
+    private int offsetMaximum;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
     @Override
     protected void initializeVariables() {
         super.initializeVariables();
+
         getTextFieldClientId().setText(CUSTOMER_ID);
         getTextFieldClientSecret().setText(CUSTOMER_SECRET);
+
         getTextFieldUser().setText(DEFAULT_USER);
+        getTextFieldTerm().setText(DEFAULT_TERM);
+
+        setOffset(0);
+        setOffsetMaximum(500);
     }
 
     @Override
@@ -193,7 +200,7 @@ public class MainController extends TemplateController {
                             .addAll(responseDocuments.getDocuments());
                 });
 
-                if (responseDocuments.getHasMore()) {
+                if (responseDocuments.getHasMore() && responseDocuments.getNextOffset() <= getOffsetMaximum()) {
                     setOffset(responseDocuments.getNextOffset());
                     tryGetGalleryAll();
 
@@ -242,7 +249,7 @@ public class MainController extends TemplateController {
                             .addAll(responseDocuments.getDocuments());
                 });
 
-                if (responseDocuments.getHasMore()) {
+                if (responseDocuments.getHasMore() && responseDocuments.getNextOffset() <= getOffsetMaximum()) {
                     setOffset(responseDocuments.getNextOffset());
                     tryGetBrowseNewest();
 
