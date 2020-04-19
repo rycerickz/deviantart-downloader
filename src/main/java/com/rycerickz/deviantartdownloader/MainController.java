@@ -53,6 +53,10 @@ public class MainController extends TemplateController {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    private int offset;
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     @Override
     protected void initializeVariables() {
         super.initializeVariables();
@@ -119,7 +123,8 @@ public class MainController extends TemplateController {
         // TODO: agregar mature content al formulario (checkbox).
         HashMap<String, String> params = new HashMap();
         params.put("username", getTextFieldUser().getText());
-        params.put("offset", "0");
+        params.put("offset", String.valueOf(getOffset()));
+        params.put("limit", String.valueOf(10));
         params.put("mature_content", "true");
         DeviantartRestRequest.getInstance().getGalleryAll(params, new RestRequestCallbackInterface() {
             @Override
@@ -133,6 +138,11 @@ public class MainController extends TemplateController {
                             .getDocuments()
                             .addAll(responseGallery.getDocuments());
                 });
+
+                if(responseGallery.getHasMore()){
+                    setOffset(responseGallery.getNextOffset());
+                    tryGetGallery();
+                }
             }
 
             @Override
