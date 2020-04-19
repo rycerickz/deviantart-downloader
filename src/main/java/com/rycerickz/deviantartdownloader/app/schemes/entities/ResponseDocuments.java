@@ -15,11 +15,11 @@ import java.util.ArrayList;
 
 @Getter
 @Setter
-public class ResponseGallery {
+public class ResponseDocuments {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    private static final String TAG = ResponseGallery.class.getSimpleName();
+    private static final String TAG = ResponseDocuments.class.getSimpleName();
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -30,6 +30,10 @@ public class ResponseGallery {
     @Expose
     @SerializedName("next_offset")
     private Integer nextOffset;
+
+    @Expose
+    @SerializedName("estimated_total")
+    private Integer estimatedTotal;
 
     @Expose
     @SerializedName("results")

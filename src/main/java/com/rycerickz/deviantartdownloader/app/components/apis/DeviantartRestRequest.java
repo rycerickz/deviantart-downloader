@@ -34,7 +34,8 @@ public class DeviantartRestRequest extends CoreRestRequest {
     public enum ENTITIES {
 
         TOKEN("token"),
-        GALLERY_ALL("gallery/all");
+        GALLERY_ALL("gallery/all"),
+        BROWSE_NEWEST("browse/newest");
 
         private final String entity;
 
@@ -113,6 +114,10 @@ public class DeviantartRestRequest extends CoreRestRequest {
 
     public void getGalleryAll(Map<String, String> params, RestRequestCallbackInterface restRequestCallbackInterface) {
         get(ENTITIES.GALLERY_ALL.getEntity(), params, restRequestCallbackInterface);
+    }
+
+    public void getBrowseNewest(Map<String, String> params, RestRequestCallbackInterface restRequestCallbackInterface) {
+        get(ENTITIES.BROWSE_NEWEST.getEntity(), params, restRequestCallbackInterface);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
