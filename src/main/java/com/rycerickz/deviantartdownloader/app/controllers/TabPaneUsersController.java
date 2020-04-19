@@ -22,6 +22,8 @@ import lombok.Setter;
 
 import java.io.IOException;
 
+import static javafx.scene.control.TabPane.TabClosingPolicy.ALL_TABS;
+
 /*====================================================================================================================*/
 
 @Getter
@@ -49,6 +51,7 @@ public class TabPaneUsersController extends TemplateController {
     protected void initializeVariables() {
         super.initializeVariables();
 
+        getTabPaneUsers().setTabClosingPolicy(ALL_TABS);
         getTabPaneUsers().getTabs().clear();
 
         setUsers(FXCollections.observableArrayList());

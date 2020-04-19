@@ -22,6 +22,8 @@ import lombok.Setter;
 import okhttp3.Call;
 import okhttp3.Response;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.rycerickz.deviantartdownloader.MainConfiguration.*;
@@ -142,6 +144,9 @@ public class MainController extends TemplateController {
                 if(responseGallery.getHasMore()){
                     setOffset(responseGallery.getNextOffset());
                     tryGetGallery();
+
+                }else{
+                    setOffset(0);
                 }
             }
 

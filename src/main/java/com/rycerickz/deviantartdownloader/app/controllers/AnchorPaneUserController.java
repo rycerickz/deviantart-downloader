@@ -38,6 +38,7 @@ import okhttp3.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 /*====================================================================================================================*/
 
@@ -66,6 +67,8 @@ public class AnchorPaneUserController extends TemplateController {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    private ArrayList<Image> images;
+
     private ObjectProperty<User> user;
 
     private TreeItem treeItemRoot;
@@ -75,6 +78,8 @@ public class AnchorPaneUserController extends TemplateController {
     @Override
     protected void initializeVariables() {
         super.initializeVariables();
+
+        setImages(new ArrayList<>());
 
         setUser(new SimpleObjectProperty<>());
         getUser().addListener((observableValue, oldUser, newUser) -> {
@@ -112,6 +117,8 @@ public class AnchorPaneUserController extends TemplateController {
         getTreeTableViewDocuments().getColumns().add(getTreeTableColumnCategory());
 
         setTreeItemRoot(new TreeItem(EntityManager.getDocumentRoot()));
+        getTreeItemRoot().setExpanded(true);
+
         getTreeTableViewDocuments().setRoot(getTreeItemRoot());
     }
 
@@ -136,6 +143,7 @@ public class AnchorPaneUserController extends TemplateController {
                     getTreeItemRoot().getChildren().add(treeItemDocument);
 
                     Image image = new Image(new ByteArrayInputStream(bytes));
+                    getImages().add(image);
 
                     ImageView imageView = new ImageView(image);
                     imageView.setFitWidth(Math.min(400, image.getWidth()));
@@ -145,6 +153,9 @@ public class AnchorPaneUserController extends TemplateController {
                     pane.getChildren().add(imageView);
 
                     getJfxMasonryPaneGallery().getChildren().add(pane);
+
+                    getJfxMasonryPaneGallery().setHSpacing(10);
+                    getJfxMasonryPaneGallery().setVSpacing(10);
 
                     getScrollPaneGallery().requestLayout();
                     JFXScrollPane.smoothScrolling(getScrollPaneGallery());
