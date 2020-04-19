@@ -37,7 +37,11 @@ public class Logs {
     }
 
     public static void exception(Exception exception) {
-        System.err.println("EXCEPTION => " + exception.getMessage());
+        System.err.println("EXCEPTION => " + exception.getLocalizedMessage());
+    }
+
+    public static void error(String error) {
+        System.err.println("ERROR => " + error);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/

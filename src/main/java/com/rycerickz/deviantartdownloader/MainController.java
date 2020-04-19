@@ -10,6 +10,7 @@ import com.rycerickz.deviantartdownloader.app.schemes.entities.ResponseGallery;
 import com.rycerickz.deviantartdownloader.app.schemes.entities.ResponseToken;
 import com.rycerickz.deviantartdownloader.core.components.Is;
 import com.rycerickz.deviantartdownloader.core.components.Json;
+import com.rycerickz.deviantartdownloader.core.components.Logs;
 import com.rycerickz.deviantartdownloader.core.interfaces.RestRequestCallbackInterface;
 import com.rycerickz.deviantartdownloader.core.templates.TemplateController;
 import javafx.application.Platform;
@@ -19,6 +20,7 @@ import javafx.scene.control.TextField;
 import lombok.Getter;
 import lombok.Setter;
 import okhttp3.Call;
+import okhttp3.Response;
 
 import java.util.HashMap;
 
@@ -93,14 +95,21 @@ public class MainController extends TemplateController {
                 ResponseToken responseToken = Json.parse(ResponseToken.class, response);
                 DeviantartRestRequest.setResponseToken(responseToken);
 
-                if (Is.validString(responseToken.getAccessToken())) {
-                    tryGetGallery();
-                }
+                Platform.runLater(() -> {
+                    if (Is.validString(responseToken.getAccessToken())) {
+                        tryGetGallery();
+                    }
+                });
             }
 
             @Override
             public void error(Call call, String response) {
-                System.out.println(response);
+                Logs.error(response);
+                // TODO: manejar respuesta.
+            }
+
+            @Override
+            public void response(Call call, byte[] bytes) {
                 // TODO: manejar respuesta.
             }
         });
@@ -116,16 +125,24 @@ public class MainController extends TemplateController {
             @Override
             public void success(Call call, String response) {
                 ResponseGallery responseGallery = Json.parse(ResponseGallery.class, response);
-                getTabPaneUsersController()
-                        .getUserSelected()
-                        .get()
-                        .getDocuments()
-                        .addAll(responseGallery.getDocuments());
+
+                Platform.runLater(() -> {
+                    getTabPaneUsersController()
+                            .getUserSelected()
+                            .get()
+                            .getDocuments()
+                            .addAll(responseGallery.getDocuments());
+                });
             }
 
             @Override
             public void error(Call call, String response) {
-                System.out.println(response);
+                Logs.error(response);
+                // TODO: manejar respuesta.
+            }
+
+            @Override
+            public void response(Call call, byte[] bytes) {
                 // TODO: manejar respuesta.
             }
         });

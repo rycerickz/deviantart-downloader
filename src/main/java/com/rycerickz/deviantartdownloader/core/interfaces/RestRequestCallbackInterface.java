@@ -5,6 +5,7 @@ package com.rycerickz.deviantartdownloader.core.interfaces;
 /*====================================================================================================================*/
 
 import okhttp3.Call;
+import okhttp3.Response;
 
 /*====================================================================================================================*/
 
@@ -15,6 +16,8 @@ public interface RestRequestCallbackInterface {
     void success(Call call, String response);
 
     void error(Call call, String response);
+
+    void response(Call call, byte[] bytes);
 
     /*----------------------------------------------------------------------------------------------------------------*/
 

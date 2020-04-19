@@ -4,10 +4,7 @@ package com.rycerickz.deviantartdownloader.core.components;
 
 /*====================================================================================================================*/
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,26 +23,33 @@ public class Json {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    private static Gson gson;
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     public static GsonBuilder getGsonBuilder() {
         return new GsonBuilder().setDateFormat(DATE_FORMAT);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    public static Gson getGson() {
-        return getGsonBuilder().create();
+    public static Gson getInstance() {
+        if (gson == null) {
+            gson = getGsonBuilder().create();
+        }
+        return gson;
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
     public static String toString(Object object) {
-        return getGson().toJson(object);
+        return getInstance().toJson(object);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
     public static <T> T parse(Class<T> schema, String json) {
-        return getGson().fromJson(json, schema);
+        return getInstance().fromJson(json, schema);
     }
 
     public static <T> ArrayList<T> parseList(final Class<T[]> schema, String json) {
@@ -57,6 +61,19 @@ public class Json {
 
     public static JsonElement jsonParser(String json) {
         return new JsonParser().parse(json);
+    }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    public static boolean isValid(String Json) {
+        try {
+            JsonParser jsonParser = new JsonParser();
+            jsonParser.parse(Json);
+            return true;
+
+        } catch (JsonSyntaxException jsonSyntaxException) {
+            return false;
+        }
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/

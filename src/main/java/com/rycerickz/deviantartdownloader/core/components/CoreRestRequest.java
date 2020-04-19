@@ -10,9 +10,11 @@ import lombok.Getter;
 import lombok.Setter;
 import okhttp3.*;
 import okhttp3.Request.Builder;
+import okio.BufferedSink;
+import okio.Okio;
+import okio.Source;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -20,6 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import static com.rycerickz.deviantartdownloader.MainConfiguration.IS_DEBUG;
+import static java.lang.Long.MAX_VALUE;
 
 /*====================================================================================================================*/
 
@@ -77,7 +80,8 @@ abstract public class CoreRestRequest {
     /*----------------------------------------------------------------------------------------------------------------*/
 
     private Builder getBuilder(String url) {
-        Builder builder = new Builder().url(url);
+        Builder builder = new Builder()
+                .url(url);
 
         Iterator iterator = getHeaders().entrySet().iterator();
         while (iterator.hasNext()) {
@@ -105,24 +109,24 @@ abstract public class CoreRestRequest {
             @Override
             public void onResponse(Call call, Response response) {
                 try {
-                    String bodyResponse = response.body().string();
+                    byte[] bytes = response.body().bytes();
+                    String bodyResponse = new String(bytes);
 
-                    if (IS_DEBUG) {
+                    if (IS_DEBUG && Json.isValid(bodyResponse)) {
                         Logs.restResponse(bodyResponse);
                     }
 
+                    restRequestCallbackInterface.response(call, bytes);
+
                     if (response.isSuccessful()) {
-                        Platform.runLater(() ->
-                                restRequestCallbackInterface.success(call, bodyResponse));
+                        restRequestCallbackInterface.success(call, bodyResponse);
 
                     } else {
-                        Platform.runLater(() ->
-                                restRequestCallbackInterface.error(call, bodyResponse));
+                        restRequestCallbackInterface.error(call, bodyResponse);
                     }
 
                 } catch (IOException iOException) {
-                    Platform.runLater(() ->
-                            restRequestCallbackInterface.error(call, iOException.getMessage()));
+                    restRequestCallbackInterface.error(call, iOException.getMessage());
                 }
             }
         });

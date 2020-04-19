@@ -117,6 +117,12 @@ public class DeviantartRestRequest extends CoreRestRequest {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    public void getImage(String url, RestRequestCallbackInterface restRequestCallbackInterface) {
+        super.get(url, new HashMap<>(), restRequestCallbackInterface);
+    }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
 }
 
 /*====================================================================================================================*/
