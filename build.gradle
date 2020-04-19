@@ -25,11 +25,13 @@ dependencies {
 
     // Gson.
     implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'org.hildan.fxgson:fx-gson:3.1.2'
 
     // Lombok.
     compileOnly 'org.projectlombok:lombok:1.18.12'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+    // Apache Commons Lang.
+    implementation 'org.apache.commons:commons-lang3:3.1'
 
     //================================================================================================================//
 

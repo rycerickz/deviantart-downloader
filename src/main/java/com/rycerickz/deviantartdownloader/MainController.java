@@ -1,17 +1,20 @@
 /*====================================================================================================================*/
 
-package com.rycerickz.deviantartdownloader.app.controllers;
+package com.rycerickz.deviantartdownloader;
 
 /*====================================================================================================================*/
 
 import com.rycerickz.deviantartdownloader.app.components.apis.DeviantartRestRequest;
-import com.rycerickz.deviantartdownloader.app.schemes.entities.DeviantartResponseToken;
+import com.rycerickz.deviantartdownloader.app.controllers.TabPaneUsersController;
+import com.rycerickz.deviantartdownloader.app.schemes.entities.ResponseGallery;
+import com.rycerickz.deviantartdownloader.app.schemes.entities.ResponseToken;
+import com.rycerickz.deviantartdownloader.core.components.Is;
 import com.rycerickz.deviantartdownloader.core.components.Json;
 import com.rycerickz.deviantartdownloader.core.interfaces.RestRequestCallbackInterface;
 import com.rycerickz.deviantartdownloader.core.templates.TemplateController;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,8 +22,7 @@ import okhttp3.Call;
 
 import java.util.HashMap;
 
-import static com.rycerickz.deviantartdownloader.MainConfiguration.CUSTOMER_ID;
-import static com.rycerickz.deviantartdownloader.MainConfiguration.CUSTOMER_SECRET;
+import static com.rycerickz.deviantartdownloader.MainConfiguration.*;
 
 /*====================================================================================================================*/
 
@@ -45,9 +47,6 @@ public class MainController extends TemplateController {
     /*----------------------------------------------------------------------------------------------------------------*/
 
     @FXML
-    private TabPane tabPaneUsers;
-
-    @FXML
     private TabPaneUsersController tabPaneUsersController;
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -57,6 +56,7 @@ public class MainController extends TemplateController {
         super.initializeVariables();
         getTextFieldClientId().setText(CUSTOMER_ID);
         getTextFieldClientSecret().setText(CUSTOMER_SECRET);
+        getTextFieldUser().setText(DEFAULT_USER);
     }
 
     @Override
@@ -66,15 +66,23 @@ public class MainController extends TemplateController {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    public void actionMenuClose() {
+        Platform.exit();
+        System.exit(0);
+    }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     public void actionScan() {
-        getTabPaneUsersController().addUser();
-        System.out.println("scanear a " + getTextFieldUser().getText());
+        // TODO: agregar form validador (campos requeridos para la solicitud).
+        getTabPaneUsersController().addUser(getTextFieldUser().getText());
         tryLogin();
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
     private void tryLogin() {
+        // TODO: validar la expiracion del token.
         HashMap<String, String> params = new HashMap();
         params.put("client_id", getTextFieldClientId().getText());
         params.put("client_secret", getTextFieldClientSecret().getText());
@@ -82,36 +90,45 @@ public class MainController extends TemplateController {
         DeviantartRestRequest.getInstance().getToken(params, new RestRequestCallbackInterface() {
             @Override
             public void success(Call call, String response) {
-                DeviantartResponseToken deviantartResponseToken = Json.parse(DeviantartResponseToken.class, response);
-                deviantartResponseToken.getAccessToken();
+                ResponseToken responseToken = Json.parse(ResponseToken.class, response);
+                DeviantartRestRequest.setResponseToken(responseToken);
 
-                tryGetGallery();
+                if (Is.validString(responseToken.getAccessToken())) {
+                    tryGetGallery();
+                }
             }
 
             @Override
-            public void error(Call call, Exception exception) {
-                System.out.println(exception.getMessage());
+            public void error(Call call, String response) {
+                System.out.println(response);
+                // TODO: manejar respuesta.
             }
         });
     }
 
     private void tryGetGallery() {
-//        HashMap<String, String> params = new HashMap();
-//        params.put("username", getTextFieldUser().getText());
-//        params.put("offset", "0");
-//        params.put("mature_content", "true");
-//        getDeviantartRestRequests().getGalleryAll(params, new RestRequestCallbackInterface() {
-//            @Override
-//            public void success(Call call, String response) {
-//                DeviantartResponseToken deviantartResponseToken = Json.parse(DeviantartResponseToken.class, response);
-//                deviantartResponseToken.getAccessToken();
-//            }
-//
-//            @Override
-//            public void error(Call call, Exception exception) {
-//                System.out.println(exception.getMessage());
-//            }
-//        });
+        // TODO: agregar mature content al formulario (checkbox).
+        HashMap<String, String> params = new HashMap();
+        params.put("username", getTextFieldUser().getText());
+        params.put("offset", "0");
+        params.put("mature_content", "true");
+        DeviantartRestRequest.getInstance().getGalleryAll(params, new RestRequestCallbackInterface() {
+            @Override
+            public void success(Call call, String response) {
+                ResponseGallery responseGallery = Json.parse(ResponseGallery.class, response);
+                getTabPaneUsersController()
+                        .getUserSelected()
+                        .get()
+                        .getDocuments()
+                        .addAll(responseGallery.getDocuments());
+            }
+
+            @Override
+            public void error(Call call, String response) {
+                System.out.println(response);
+                // TODO: manejar respuesta.
+            }
+        });
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/

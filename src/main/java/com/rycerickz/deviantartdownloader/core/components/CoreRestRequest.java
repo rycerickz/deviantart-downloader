@@ -9,10 +9,13 @@ import javafx.application.Platform;
 import lombok.Getter;
 import lombok.Setter;
 import okhttp3.*;
+import okhttp3.Request.Builder;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -32,6 +35,8 @@ abstract public class CoreRestRequest {
 
     private OkHttpClient okHttpClient;
 
+    private Map<String, String> headers;
+
     /*----------------------------------------------------------------------------------------------------------------*/
 
     public CoreRestRequest() {
@@ -40,15 +45,29 @@ abstract public class CoreRestRequest {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    public void get(String url, Map<String, String> params, RestRequestCallbackInterface restRequestCallbackInterface) {
+    protected Map<String, String> getHeaders() {
+        if (headers == null) {
+            headers = new HashMap<>();
+            headers.put("Content-Type", "application/json");
+        }
+        return headers;
+    }
+
+    protected void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    protected void get(String url, Map<String, String> params, RestRequestCallbackInterface restRequestCallbackInterface) {
         if (IS_DEBUG) {
-            System.out.println(url);
+            Logs.restUrl(url);
+            Logs.restParams(params);
         }
 
-        Request request = new Request
-                .Builder()
-                .url(url + hashMapToQueryString(params))
-                .build();
+        url += hashMapToQueryString(params);
+
+        Request request = getBuilder(url).build();
 
         Call call = getOkHttpClient().newCall(request);
 
@@ -57,29 +76,53 @@ abstract public class CoreRestRequest {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    private Builder getBuilder(String url) {
+        Builder builder = new Builder().url(url);
+
+        Iterator iterator = getHeaders().entrySet().iterator();
+        while (iterator.hasNext()) {
+            Entry entry = (Entry) iterator.next();
+            builder.addHeader(entry.getKey().toString(), entry.getValue().toString());
+        }
+
+        if (IS_DEBUG) {
+            Logs.restHeaders(getHeaders());
+        }
+
+        return builder;
+    }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     private void callbackListener(Call call, RestRequestCallbackInterface restRequestCallbackInterface) {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException iOException) {
-                Platform.runLater(() -> restRequestCallbackInterface.error(call, iOException));
+                Platform.runLater(() ->
+                        restRequestCallbackInterface.error(call, iOException.getMessage()));
             }
 
             @Override
             public void onResponse(Call call, Response response) {
-                if (response.isSuccessful()) {
-                    try {
-                        String bodyResponse = response.body().string();
+                try {
+                    String bodyResponse = response.body().string();
+
+                    if (IS_DEBUG) {
+                        Logs.restResponse(bodyResponse);
+                    }
+
+                    if (response.isSuccessful()) {
                         Platform.runLater(() ->
                                 restRequestCallbackInterface.success(call, bodyResponse));
 
-                    } catch (IOException iOException) {
+                    } else {
                         Platform.runLater(() ->
-                                restRequestCallbackInterface.error(call, iOException));
+                                restRequestCallbackInterface.error(call, bodyResponse));
                     }
 
-                } else {
+                } catch (IOException iOException) {
                     Platform.runLater(() ->
-                            restRequestCallbackInterface.error(call, new Exception(response.message())));
+                            restRequestCallbackInterface.error(call, iOException.getMessage()));
                 }
             }
         });
@@ -87,7 +130,7 @@ abstract public class CoreRestRequest {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    public static String hashMapToQueryString(Map<String, String> params) {
+    protected static String hashMapToQueryString(Map<String, String> params) {
         StringBuilder stringBuilder = new StringBuilder();
         if (params.size() > 0) {
             stringBuilder.append("?");

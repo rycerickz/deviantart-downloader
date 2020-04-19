@@ -5,6 +5,7 @@ package com.rycerickz.deviantartdownloader;
 /*====================================================================================================================*/
 
 import com.rycerickz.deviantartdownloader.app.components.apis.DeviantartRestRequest;
+import com.rycerickz.deviantartdownloader.core.components.Logs;
 import com.rycerickz.deviantartdownloader.core.templates.TemplateApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -54,10 +55,8 @@ public class MainApplication extends TemplateApplication {
 
         try {
             initializeMainLayout();
-
         } catch (Exception exception) {
-            String type = exception.getClass().toString();
-            System.out.println(exception.getMessage());
+            Logs.exception(exception);
         }
     }
 

@@ -14,7 +14,7 @@ public interface RestRequestCallbackInterface {
 
     void success(Call call, String response);
 
-    void error(Call call, Exception exception);
+    void error(Call call, String response);
 
     /*----------------------------------------------------------------------------------------------------------------*/
 

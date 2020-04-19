@@ -8,7 +8,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import org.hildan.fxgson.FxGson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,18 +30,10 @@ public class Json {
         return new GsonBuilder().setDateFormat(DATE_FORMAT);
     }
 
-    public static GsonBuilder getFxGsonBuilder() {
-        return FxGson.addFxSupport(getGsonBuilder());
-    }
-
     /*----------------------------------------------------------------------------------------------------------------*/
 
     public static Gson getGson() {
         return getGsonBuilder().create();
-    }
-
-    public static Gson getFxGson() {
-        return getFxGsonBuilder().create();
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/

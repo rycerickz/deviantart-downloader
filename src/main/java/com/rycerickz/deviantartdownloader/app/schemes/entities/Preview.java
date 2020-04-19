@@ -1,12 +1,14 @@
 /*====================================================================================================================*/
 
-package com.rycerickz.deviantartdownloader.app.schemes.properties;
+package com.rycerickz.deviantartdownloader.app.schemes.entities;
 
 /*====================================================================================================================*/
 
-import com.rycerickz.deviantartdownloader.app.schemes.entities.Document;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.ObservableList;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,17 +16,29 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class User {
+public class Preview {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    private static final String TAG = User.class.getSimpleName();
+    private static final String TAG = Preview.class.getSimpleName();
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    private StringProperty username;
+    @Expose
+    @SerializedName("src")
+    private String src;
 
-    private ObservableList<Document> documents;
+    @Expose
+    @SerializedName("width")
+    private Integer width;
+
+    @Expose
+    @SerializedName("height")
+    private Integer height;
+
+    @Expose
+    @SerializedName("transparency")
+    private Boolean transparency;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 

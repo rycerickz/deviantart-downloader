@@ -1,15 +1,11 @@
 /*====================================================================================================================*/
 
-package com.rycerickz.deviantartdownloader.app.schemes.properties;
+package com.rycerickz.deviantartdownloader.app.schemes.entities;
 
 /*====================================================================================================================*/
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.StringProperty;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,33 +13,42 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Preview {
+public class ResponseToken {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    private static final String TAG = Preview.class.getSimpleName();
+    private static final String TAG = ResponseToken.class.getSimpleName();
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
     @Expose
-    @SerializedName("src")
-    private StringProperty src;
+    @SerializedName("access_token")
+    private String accessToken;
 
     @Expose
-    @SerializedName("width")
-    private IntegerProperty width;
+    @SerializedName("token_type")
+    private String tokenType;
 
     @Expose
-    @SerializedName("height")
-    private IntegerProperty height;
+    @SerializedName("expires_in")
+    private Long expiresIn;
 
     @Expose
-    @SerializedName("transparency")
-    private BooleanProperty transparency;
+    @SerializedName("status")
+    private String status;
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    @Expose
+    @SerializedName("error")
+    private String error;
+
+    @Expose
+    @SerializedName("error_description")
+    private String errorDescription;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
 }
 
 /*====================================================================================================================*/
-

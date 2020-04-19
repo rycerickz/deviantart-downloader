@@ -1,34 +1,35 @@
 /*====================================================================================================================*/
 
-package com.rycerickz.deviantartdownloader.app.schemes.properties;
+package com.rycerickz.deviantartdownloader.app.schemes;
 
 /*====================================================================================================================*/
 
 import com.rycerickz.deviantartdownloader.app.schemes.entities.Document;
-import javafx.beans.property.StringProperty;
-import javafx.collections.ObservableList;
-import lombok.Getter;
-import lombok.Setter;
+import com.rycerickz.deviantartdownloader.app.schemes.properties.User;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 
 /*====================================================================================================================*/
 
-@Getter
-@Setter
-public class User {
+public class EntityManager {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    private static final String TAG = User.class.getSimpleName();
+    public static User getUser(String username) {
+        User user = new User();
+        user.setUsername(new SimpleStringProperty(username));
+        user.setDocuments(FXCollections.observableArrayList());
+        return user;
+    }
 
-    /*----------------------------------------------------------------------------------------------------------------*/
-
-    private StringProperty username;
-
-    private ObservableList<Document> documents;
+    public static Document getDocumentRoot() {
+        Document document = new Document();
+        document.setTitle("Todos");
+        return document;
+    }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
 }
 
 /*====================================================================================================================*/
-

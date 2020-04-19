@@ -10,6 +10,7 @@
     <tabs>
         <Tab text="Usuario 1">
             <content>
+                <fx:include fx:id="anchorPaneUser" source="application_anchor_pane_user.fxml"/>
             </content>
         </Tab>
     </tabs>

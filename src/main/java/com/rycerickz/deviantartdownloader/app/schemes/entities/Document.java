@@ -1,6 +1,6 @@
 /*====================================================================================================================*/
 
-package com.rycerickz.deviantartdownloader.app.schemes.properties;
+package com.rycerickz.deviantartdownloader.app.schemes.entities;
 
 /*====================================================================================================================*/
 
@@ -8,7 +8,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,57 +25,57 @@ public class Document {
 
     @Expose
     @SerializedName("deviationid")
-    private StringProperty idDeviation;
+    private String idDeviation;
 
     @Expose
     @SerializedName("printid")
-    private StringProperty idPrint;
+    private String idPrint;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
     @Expose
     @SerializedName("title")
-    private StringProperty title;
+    private String title;
 
     @Expose
     @SerializedName("url")
-    private StringProperty url;
+    private String url;
 
     @Expose
     @SerializedName("category")
-    private StringProperty category;
+    private String category;
 
     @Expose
     @SerializedName("category_path")
-    private StringProperty categoryPath;
+    private String categoryPath;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
     @Expose
     @SerializedName("is_mature")
-    private StringProperty isMature;
+    private String isMature;
 
     @Expose
     @SerializedName("is_downloadable")
-    private StringProperty isDownloadable;
+    private String isDownloadable;
 
     @Expose
     @SerializedName("is_favourited")
-    private StringProperty isFavourited;
+    private String isFavourited;
 
     @Expose
     @SerializedName("is_deleted")
-    private StringProperty isDeleted;
+    private String isDeleted;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
     @Expose
     @SerializedName("author")
-    private ObjectProperty<Author> author;
+    private Author author;
 
     @Expose
     @SerializedName("preview")
-    private ObjectProperty<Preview> preview;
+    private Preview preview;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
