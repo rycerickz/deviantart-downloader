@@ -8,8 +8,10 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.image.Image;
 import lombok.Getter;
 import lombok.Setter;
+
 
 /*====================================================================================================================*/
 
@@ -76,6 +78,10 @@ public class Document {
     @Expose
     @SerializedName("preview")
     private Preview preview;
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    private Image image;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 

@@ -4,16 +4,11 @@ package com.rycerickz.deviantartdownloader.app.controllers;
 
 /*====================================================================================================================*/
 
-import com.google.gson.internal.$Gson$Preconditions;
 import com.jfoenix.controls.JFXMasonryPane;
 import com.jfoenix.controls.JFXScrollPane;
-import com.rycerickz.deviantartdownloader.app.components.apis.DeviantartRestRequest;
 import com.rycerickz.deviantartdownloader.app.schemes.EntityManager;
 import com.rycerickz.deviantartdownloader.app.schemes.entities.Document;
 import com.rycerickz.deviantartdownloader.app.schemes.properties.User;
-import com.rycerickz.deviantartdownloader.core.components.Is;
-import com.rycerickz.deviantartdownloader.core.components.Logs;
-import com.rycerickz.deviantartdownloader.core.interfaces.RestRequestCallbackInterface;
 import com.rycerickz.deviantartdownloader.core.templates.TemplateController;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -28,16 +23,10 @@ import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.BorderPane;
 import lombok.Getter;
 import lombok.Setter;
-import okhttp3.Call;
-import okhttp3.Response;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 /*====================================================================================================================*/
@@ -125,43 +114,40 @@ public class AnchorPaneUserController extends TemplateController {
     /*----------------------------------------------------------------------------------------------------------------*/
 
     private void addDocument(Document document) {
-        DeviantartRestRequest.getInstance().getImage(document.getPreview().getSrc(), new RestRequestCallbackInterface() {
-            @Override
-            public void success(Call call, String response) {
-                // TODO: manejar respuesta.
-            }
+        new Thread(() -> {
+            Image image = new Image(document.getPreview().getSrc());
 
-            @Override
-            public void error(Call call, String response) {
-                // TODO: manejar respuesta.
-            }
+            Platform.runLater(() -> {
+                TreeItem<Document> treeItemDocument = new TreeItem<>(document);
+                getTreeItemRoot().getChildren().add(treeItemDocument);
 
-            @Override
-            public void response(Call call, byte[] bytes) {
-                Platform.runLater(() -> {
-                    TreeItem<Document> treeItemDocument = new TreeItem<>(document);
-                    getTreeItemRoot().getChildren().add(treeItemDocument);
+                getImages().add(image);
+                document.setImage(image);
 
-                    Image image = new Image(new ByteArrayInputStream(bytes));
-                    getImages().add(image);
+                double ratio = image.getWidth() / image.getHeight();
 
-                    ImageView imageView = new ImageView(image);
-                    imageView.setFitWidth(Math.min(400, image.getWidth()));
-                    imageView.setPreserveRatio(true);
+                double width = Math.min(Math.min(image.getWidth(), 300), image.getWidth() / ratio);
+                double height = Math.min(Math.min(image.getHeight(), 300), image.getHeight() / ratio);
 
-                    Pane pane = new Pane();
-                    pane.getChildren().add(imageView);
+                ImageView imageView = new ImageView(image);
+                imageView.setFitWidth(width);
+                imageView.setFitHeight(height);
+                imageView.setPreserveRatio(true);
 
-                    getJfxMasonryPaneGallery().getChildren().add(pane);
+                BorderPane borderPane = new BorderPane();
+                borderPane.setStyle("-fx-background-color: #dddddd");
+                borderPane.setPrefSize(width, height);
+                borderPane.setCenter(imageView);
 
-                    getJfxMasonryPaneGallery().setHSpacing(10);
-                    getJfxMasonryPaneGallery().setVSpacing(10);
+                getJfxMasonryPaneGallery().getChildren().add(borderPane);
 
-                    getScrollPaneGallery().requestLayout();
-                    JFXScrollPane.smoothScrolling(getScrollPaneGallery());
-                });
-            }
-        });
+                getJfxMasonryPaneGallery().setHSpacing(10);
+                getJfxMasonryPaneGallery().setVSpacing(10);
+
+                getScrollPaneGallery().requestLayout();
+                JFXScrollPane.smoothScrolling(getScrollPaneGallery());
+            });
+        }).start();
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
