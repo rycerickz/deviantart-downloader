@@ -4,13 +4,12 @@ package com.rycerickz.deviantartdownloader;
 
 /*====================================================================================================================*/
 
-import javafx.application.Application;
+import com.rycerickz.deviantartdownloader.app.components.apis.DeviantartRestRequest;
+import com.rycerickz.deviantartdownloader.core.templates.TemplateApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,35 +18,46 @@ import java.io.IOException;
 
 /*====================================================================================================================*/
 
-public class MainApplication extends Application {
+@Getter
+@Setter
+public class MainApplication extends TemplateApplication {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    @Getter
-    @Setter
-    private Stage primaryStage;
-
-    @Getter
-    @Setter
     private BorderPane borderPaneMain;
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    private DeviantartRestRequest deviantartRestRequests;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
     @Override
     public void start(Stage primaryStage) {
-        setPrimaryStage(primaryStage);
+        super.start(primaryStage);
+    }
 
-        getPrimaryStage().setTitle("DeviantArt Downloader");
-        getPrimaryStage().getIcons().add(new Image(getClass().getResourceAsStream(("/icons/logotype-deviantart.png"))));
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    @Override
+    protected void initializeVariables() {
+        super.initializeVariables();
+        setDeviantartRestRequests(new DeviantartRestRequest());
+    }
+
+    @Override
+    protected void initializeViews() {
+        super.initializeViews();
+
+        getMainStage().setTitle("DeviantArt Downloader");
+        getMainStage().getIcons().add(new Image(getClass().getResourceAsStream(("/icons/logotype-deviantart.png"))));
 
         try {
             initializeMainLayout();
-            initializeInterfaceLayout();
-
-        } catch (IOException iOException) {
 
         } catch (Exception exception) {
-
+            String type = exception.getClass().toString();
+            System.out.println(exception.getMessage());
         }
     }
 
@@ -58,19 +68,10 @@ public class MainApplication extends Application {
         fxmlLoader.setLocation(getClass().getResource("/layouts/application_main.fxml"));
         setBorderPaneMain(fxmlLoader.load());
 
-        Scene scene = new Scene(getBorderPaneMain(), 900, 700);
+        Scene scene = new Scene(getBorderPaneMain());
+        getMainStage().setScene(scene);
 
-        getPrimaryStage().setScene(scene);
-
-        getPrimaryStage().show();
-    }
-
-    private void initializeInterfaceLayout() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("/layouts/application_interface.fxml"));
-        VBox vBoxIntercace = fxmlLoader.load();
-
-        getBorderPaneMain().setCenter(vBoxIntercace);
+        getMainStage().show();
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
