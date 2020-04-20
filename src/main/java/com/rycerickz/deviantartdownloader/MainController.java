@@ -5,7 +5,7 @@ package com.rycerickz.deviantartdownloader;
 /*====================================================================================================================*/
 
 import com.rycerickz.deviantartdownloader.app.components.apis.DeviantartRestRequest;
-import com.rycerickz.deviantartdownloader.app.controllers.TabPaneUsersController;
+import com.rycerickz.deviantartdownloader.app.controllers.TabPaneTermsController;
 import com.rycerickz.deviantartdownloader.app.schemes.entities.ResponseDocuments;
 import com.rycerickz.deviantartdownloader.app.schemes.entities.ResponseToken;
 import com.rycerickz.deviantartdownloader.core.components.Is;
@@ -18,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import lombok.Getter;
 import lombok.Setter;
 import okhttp3.Call;
@@ -26,8 +27,7 @@ import java.util.HashMap;
 
 import static com.jfoenix.controls.JFXSpinner.INDETERMINATE_PROGRESS;
 import static com.rycerickz.deviantartdownloader.MainConfiguration.*;
-import static com.rycerickz.deviantartdownloader.MainController.SEARCH_TYPE.BROWSE_NEWEST;
-import static com.rycerickz.deviantartdownloader.MainController.SEARCH_TYPE.GALLERY_ALL;
+import static com.rycerickz.deviantartdownloader.MainController.SEARCH_TYPE.*;
 
 /*====================================================================================================================*/
 
@@ -39,7 +39,9 @@ public class MainController extends TemplateController {
 
     protected enum SEARCH_TYPE {
         GALLERY_ALL,
-        BROWSE_NEWEST
+        BROWSE_NEWEST,
+        BROWSE_POPULAR,
+        BROWSE_RECOMMENDED
     }
 
     private SEARCH_TYPE searchType;
@@ -52,16 +54,22 @@ public class MainController extends TemplateController {
     @FXML
     private TextField textFieldClientSecret;
 
+    @FXML
+    private TextField textFieldOffsetMaximum;
+
     /*----------------------------------------------------------------------------------------------------------------*/
 
     @FXML
-    private TextField textFieldUser;
+    private ToggleButton toggleButtonGallery;
 
     @FXML
-    private Button buttonScan;
+    private ToggleButton toggleButtonBrowseNewest;
 
     @FXML
-    private ProgressBar progressBarLoadingByUser;
+    private ToggleButton toggleButtonBrowsePopular;
+
+    @FXML
+    private ToggleButton toggleButtonBrowseRecommended;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -77,12 +85,11 @@ public class MainController extends TemplateController {
     /*----------------------------------------------------------------------------------------------------------------*/
 
     @FXML
-    private TabPaneUsersController tabPaneUsersController;
+    private TabPaneTermsController tabPaneTermsController;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
     private int offset;
-    private int offsetMaximum;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -90,25 +97,52 @@ public class MainController extends TemplateController {
     protected void initializeVariables() {
         super.initializeVariables();
 
-        getTextFieldClientId().setText(CUSTOMER_ID);
-        getTextFieldClientSecret().setText(CUSTOMER_SECRET);
-
-        getTextFieldUser().setText(DEFAULT_USER);
+        getTextFieldClientId().setText(DEFAULT_CUSTOMER_ID);
+        getTextFieldClientSecret().setText(DEFAULT_CUSTOMER_SECRET);
+        getTextFieldOffsetMaximum().setText(String.valueOf(DEFAULT_OFFSET_MAXIMUM));
         getTextFieldTerm().setText(DEFAULT_TERM);
 
+        getToggleButtonGallery().setSelected(true);
+        setSearchType(GALLERY_ALL);
+
         setOffset(0);
-        setOffsetMaximum(500);
     }
 
     @Override
     protected void initializeViews() {
         super.initializeViews();
 
-        getProgressBarLoadingByUser().setProgress(INDETERMINATE_PROGRESS);
-        getProgressBarLoadingByUser().setVisible(false);
-
         getProgressBarLoadingByTerm().setProgress(INDETERMINATE_PROGRESS);
         getProgressBarLoadingByTerm().setVisible(false);
+    }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    private int getOffsetMaximum() {
+        try {
+            return Integer.parseInt(getTextFieldOffsetMaximum().getText());
+
+        } catch (Exception exception) {
+            return DEFAULT_OFFSET_MAXIMUM;
+        }
+    }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    public void actionToggleButtonGalleryAll() {
+        setSearchType(GALLERY_ALL);
+    }
+
+    public void actionToggleButtonBrowseNewest() {
+        setSearchType(BROWSE_NEWEST);
+    }
+
+    public void actionToggleButtonBrowsePopular() {
+        setSearchType(BROWSE_POPULAR);
+    }
+
+    public void actionToggleButtonBrowseRecommended() {
+        setSearchType(BROWSE_RECOMMENDED);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -120,25 +154,27 @@ public class MainController extends TemplateController {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    public void actionScan() {
-        // TODO: agregar form validador (campos requeridos para la solicitud).
-        getTabPaneUsersController().addUser(getTextFieldUser().getText());
-        setSearchType(GALLERY_ALL);
-        tryLogin();
-    }
-
     public void actionSearch() {
         // TODO: agregar form validador (campos requeridos para la solicitud).
-        // TODO: por ahora funciona como un usuario, pero se debe cambiar el controlador y todo a un tipo de busqueda por termino.
-        getTabPaneUsersController().addUser(getTextFieldTerm().getText());
-        setSearchType(BROWSE_NEWEST);
+        switch (getSearchType()) {
+            case GALLERY_ALL:
+                getTabPaneTermsController().addUser(getTextFieldTerm().getText());
+                break;
+            case BROWSE_NEWEST:
+            case BROWSE_POPULAR:
+            case BROWSE_RECOMMENDED:
+                // TODO: de momento agrega un usuario, pero debe ser un term.
+                getTabPaneTermsController().addUser(getTextFieldTerm().getText());
+                break;
+        }
+        setSearchType(getSearchType());
         tryLogin();
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
     private void tryLogin() {
-        // TODO: validar la expiracion del token.
+        // TODO: validar la expiracion del token, en realidad no debe loguearse a cada vez.
         HashMap<String, String> params = new HashMap();
         params.put("client_id", getTextFieldClientId().getText());
         params.put("client_secret", getTextFieldClientSecret().getText());
@@ -157,6 +193,12 @@ public class MainController extends TemplateController {
                                 break;
                             case BROWSE_NEWEST:
                                 tryGetBrowseNewest();
+                                break;
+                            case BROWSE_POPULAR:
+                                tryGetBrowsePopular();
+                                break;
+                            case BROWSE_RECOMMENDED:
+                                tryGetBrowseRecommended();
                                 break;
                         }
                     }
@@ -179,11 +221,11 @@ public class MainController extends TemplateController {
     /*----------------------------------------------------------------------------------------------------------------*/
 
     private void tryGetGalleryAll() {
-        getProgressBarLoadingByUser().setVisible(true);
+        getProgressBarLoadingByTerm().setVisible(true);
 
         // TODO: agregar mature content al formulario (checkbox).
         HashMap<String, String> params = new HashMap();
-        params.put("username", getTextFieldUser().getText());
+        params.put("username", getTextFieldTerm().getText());
         params.put("offset", String.valueOf(getOffset()));
         params.put("limit", String.valueOf(10));
         params.put("mature_content", "true");
@@ -193,8 +235,8 @@ public class MainController extends TemplateController {
                 ResponseDocuments responseDocuments = Json.parse(ResponseDocuments.class, response);
 
                 Platform.runLater(() -> {
-                    getTabPaneUsersController()
-                            .getUserSelected()
+                    getTabPaneTermsController()
+                            .getTermSelected()
                             .get()
                             .getDocuments()
                             .addAll(responseDocuments.getDocuments());
@@ -205,14 +247,14 @@ public class MainController extends TemplateController {
                     tryGetGalleryAll();
 
                 } else {
-                    getProgressBarLoadingByUser().setVisible(false);
+                    getProgressBarLoadingByTerm().setVisible(false);
                     setOffset(0);
                 }
             }
 
             @Override
             public void error(Call call, String response) {
-                getProgressBarLoadingByUser().setVisible(false);
+                getProgressBarLoadingByTerm().setVisible(false);
                 Logs.error(response);
                 // TODO: manejar respuesta.
             }
@@ -223,8 +265,6 @@ public class MainController extends TemplateController {
             }
         });
     }
-
-    /*----------------------------------------------------------------------------------------------------------------*/
 
     private void tryGetBrowseNewest() {
         getProgressBarLoadingByTerm().setVisible(true);
@@ -242,8 +282,8 @@ public class MainController extends TemplateController {
                 ResponseDocuments responseDocuments = Json.parse(ResponseDocuments.class, response);
 
                 Platform.runLater(() -> {
-                    getTabPaneUsersController()
-                            .getUserSelected()
+                    getTabPaneTermsController()
+                            .getTermSelected()
                             .get()
                             .getDocuments()
                             .addAll(responseDocuments.getDocuments());
@@ -252,6 +292,100 @@ public class MainController extends TemplateController {
                 if (responseDocuments.getHasMore() && responseDocuments.getNextOffset() <= getOffsetMaximum()) {
                     setOffset(responseDocuments.getNextOffset());
                     tryGetBrowseNewest();
+
+                } else {
+                    getProgressBarLoadingByTerm().setVisible(false);
+                    setOffset(0);
+                }
+            }
+
+            @Override
+            public void error(Call call, String response) {
+                getProgressBarLoadingByTerm().setVisible(false);
+                Logs.error(response);
+                // TODO: manejar respuesta.
+            }
+
+            @Override
+            public void response(Call call, byte[] bytes) {
+                // TODO: manejar respuesta.
+            }
+        });
+    }
+
+    private void tryGetBrowsePopular() {
+        getProgressBarLoadingByTerm().setVisible(true);
+
+        // TODO: agregar mature content al formulario (checkbox).
+        HashMap<String, String> params = new HashMap();
+        params.put("category_path ", "");
+        params.put("q", getTextFieldTerm().getText());
+        params.put("timerange", "alltime");
+        params.put("offset", String.valueOf(getOffset()));
+        params.put("limit", String.valueOf(10));
+        params.put("mature_content", "true");
+        DeviantartRestRequest.getInstance().getBrowsePopular(params, new RestRequestCallbackInterface() {
+            @Override
+            public void success(Call call, String response) {
+                ResponseDocuments responseDocuments = Json.parse(ResponseDocuments.class, response);
+
+                Platform.runLater(() -> {
+                    getTabPaneTermsController()
+                            .getTermSelected()
+                            .get()
+                            .getDocuments()
+                            .addAll(responseDocuments.getDocuments());
+                });
+
+                if (responseDocuments.getHasMore() && responseDocuments.getNextOffset() <= getOffsetMaximum()) {
+                    setOffset(responseDocuments.getNextOffset());
+                    tryGetBrowsePopular();
+
+                } else {
+                    getProgressBarLoadingByTerm().setVisible(false);
+                    setOffset(0);
+                }
+            }
+
+            @Override
+            public void error(Call call, String response) {
+                getProgressBarLoadingByTerm().setVisible(false);
+                Logs.error(response);
+                // TODO: manejar respuesta.
+            }
+
+            @Override
+            public void response(Call call, byte[] bytes) {
+                // TODO: manejar respuesta.
+            }
+        });
+    }
+
+    private void tryGetBrowseRecommended() {
+        // TODO: no hace falta el term.
+        getProgressBarLoadingByTerm().setVisible(true);
+
+        // TODO: agregar mature content al formulario (checkbox).
+        HashMap<String, String> params = new HashMap();
+        params.put("offset", String.valueOf(getOffset()));
+        params.put("limit", String.valueOf(10));
+        params.put("mature_content", "true");
+        DeviantartRestRequest.getInstance().getBrowseRecommended(params, new RestRequestCallbackInterface() {
+            @Override
+            public void success(Call call, String response) {
+                ResponseDocuments responseDocuments = Json.parse(ResponseDocuments.class, response);
+
+                Platform.runLater(() -> {
+                    getTabPaneTermsController()
+                            .getTermSelected()
+                            .get()
+                            .getDocuments()
+                            .addAll(responseDocuments.getDocuments());
+                });
+
+                if (responseDocuments.getHasMore() && responseDocuments.getNextOffset() <= getOffsetMaximum()) {
+                    setOffset(responseDocuments.getNextOffset());
+                    tryGetBrowseRecommended();
 
                 } else {
                     getProgressBarLoadingByTerm().setVisible(false);

@@ -27,10 +27,11 @@ public class MainConfiguration {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    public static final String CUSTOMER_ID = "11922";
-    public static final String CUSTOMER_SECRET = "9c7a17fad5344add0fa729f3373f4644";
-    public static final String DEFAULT_USER = "steamboy33";
-    public static final String DEFAULT_TERM = "Sprite mvc";
+    public static final String DEFAULT_CUSTOMER_ID = "11922";
+    public static final String DEFAULT_CUSTOMER_SECRET = "9c7a17fad5344add0fa729f3373f4644";
+    public static final String DEFAULT_TERM = "steamboy33";
+
+    public static final int DEFAULT_OFFSET_MAXIMUM = 1000;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 

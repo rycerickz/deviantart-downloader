@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TabPane?>
+<TabPane
+        fx:id="tabPaneTerms"
+        fx:controller="com.rycerickz.deviantartdownloader.app.controllers.TabPaneTermsController"
+        minHeight="700.0" minWidth="1000.0" prefHeight="700.0" prefWidth="1000.0" side="LEFT"
+        tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <tabs>
+    </tabs>
+</TabPane>

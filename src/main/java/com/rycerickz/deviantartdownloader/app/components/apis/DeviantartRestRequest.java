@@ -35,7 +35,9 @@ public class DeviantartRestRequest extends CoreRestRequest {
 
         TOKEN("token"),
         GALLERY_ALL("gallery/all"),
-        BROWSE_NEWEST("browse/newest");
+        BROWSE_NEWEST("browse/newest"),
+        BROWSE_POPULAR("browse/popular"),
+        BROWSE_RECOMMENDED("browse/recommended");
 
         private final String entity;
 
@@ -118,6 +120,14 @@ public class DeviantartRestRequest extends CoreRestRequest {
 
     public void getBrowseNewest(Map<String, String> params, RestRequestCallbackInterface restRequestCallbackInterface) {
         get(ENTITIES.BROWSE_NEWEST.getEntity(), params, restRequestCallbackInterface);
+    }
+
+    public void getBrowsePopular(Map<String, String> params, RestRequestCallbackInterface restRequestCallbackInterface) {
+        get(ENTITIES.BROWSE_POPULAR.getEntity(), params, restRequestCallbackInterface);
+    }
+
+    public void getBrowseRecommended(Map<String, String> params, RestRequestCallbackInterface restRequestCallbackInterface) {
+        get(ENTITIES.BROWSE_RECOMMENDED.getEntity(), params, restRequestCallbackInterface);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/

@@ -5,6 +5,7 @@ package com.rycerickz.deviantartdownloader.app.controllers;
 /*====================================================================================================================*/
 
 import com.rycerickz.deviantartdownloader.app.schemes.EntityManager;
+import com.rycerickz.deviantartdownloader.app.schemes.properties.Term;
 import com.rycerickz.deviantartdownloader.app.schemes.properties.User;
 import com.rycerickz.deviantartdownloader.core.components.Logs;
 import com.rycerickz.deviantartdownloader.core.templates.TemplateController;
@@ -28,22 +29,17 @@ import static javafx.scene.control.TabPane.TabClosingPolicy.ALL_TABS;
 
 @Getter
 @Setter
-public class TabPaneUsersController extends TemplateController {
+public class TabPaneTermsController extends TemplateController {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
     @FXML
-    private TabPane tabPaneUsers;
+    private TabPane tabPaneTerms;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    @FXML
-    private AnchorPaneUserController anchorPaneUserController;
-
-    /*----------------------------------------------------------------------------------------------------------------*/
-
-    private ObservableList<User> users;
-    private ObjectProperty<User> userSelected;
+    private ObservableList<Term> terms;
+    private ObjectProperty<Term> termSelected;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -51,21 +47,27 @@ public class TabPaneUsersController extends TemplateController {
     protected void initializeVariables() {
         super.initializeVariables();
 
-        getTabPaneUsers().setTabClosingPolicy(ALL_TABS);
-        getTabPaneUsers().getTabs().clear();
+        getTabPaneTerms().setTabClosingPolicy(ALL_TABS);
+        getTabPaneTerms().getTabs().clear();
 
-        setUsers(FXCollections.observableArrayList());
-        setUserSelected(new SimpleObjectProperty<>());
+        setTerms(FXCollections.observableArrayList());
+        setTermSelected(new SimpleObjectProperty<>());
 
-        getUsers().addListener((ListChangeListener<User>) change -> {
+        getTerms().addListener((ListChangeListener<Term>) change -> {
             while (change.next()) {
                 if (change.wasAdded()) {
-                    for (User user : change.getAddedSubList()) {
-                        addUserTab(user);
+                    for (Term term : change.getAddedSubList()) {
+                       if(term instanceof  User){
+                           addUserTab((User) term);
+
+                       }else{
+                           // TODO: por ahora funciona como usuario.
+                           addUserTab((User) term);
+                       }
                     }
 
                 } else if (change.wasRemoved()) {
-                    for (User user : change.getRemoved()) {
+                    for (Term term : change.getRemoved()) {
                         // TODO: remover tabla.
                     }
                 }
@@ -82,8 +84,8 @@ public class TabPaneUsersController extends TemplateController {
 
     public void addUser(String username) {
         User user = EntityManager.getUser(username);
-        getUsers().add(user);
-        getUserSelected().set(user);
+        getTerms().add(user);
+        getTermSelected().set(user);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -97,8 +99,10 @@ public class TabPaneUsersController extends TemplateController {
             Logs.exception(exception);
         }
 
-        getTabPaneUsers().getTabs().add(tab);
+        getTabPaneTerms().getTabs().add(tab);
     }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
 
     private void initializeAnchorPaneUserLayout(Tab tab, User user) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
