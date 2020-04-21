@@ -41,7 +41,7 @@ public class MainController extends TemplateController {
         GALLERY_ALL,
         BROWSE_NEWEST,
         BROWSE_POPULAR,
-        BROWSE_RECOMMENDED
+        BROWSE_UNDISCOVERED
     }
 
     private SEARCH_TYPE searchType;
@@ -69,7 +69,7 @@ public class MainController extends TemplateController {
     private ToggleButton toggleButtonBrowsePopular;
 
     @FXML
-    private ToggleButton toggleButtonBrowseRecommended;
+    private ToggleButton actionToggleButtonBrowseUndiscovered;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -141,8 +141,8 @@ public class MainController extends TemplateController {
         setSearchType(BROWSE_POPULAR);
     }
 
-    public void actionToggleButtonBrowseRecommended() {
-        setSearchType(BROWSE_RECOMMENDED);
+    public void actionToggleButtonBrowseUndiscovered() {
+        setSearchType(BROWSE_UNDISCOVERED);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -156,17 +156,6 @@ public class MainController extends TemplateController {
 
     public void actionSearch() {
         // TODO: agregar form validador (campos requeridos para la solicitud).
-        switch (getSearchType()) {
-            case GALLERY_ALL:
-                getTabPaneTermsController().addUser(getTextFieldTerm().getText());
-                break;
-            case BROWSE_NEWEST:
-            case BROWSE_POPULAR:
-            case BROWSE_RECOMMENDED:
-                // TODO: de momento agrega un usuario, pero debe ser un term.
-                getTabPaneTermsController().addUser(getTextFieldTerm().getText());
-                break;
-        }
         setSearchType(getSearchType());
         tryLogin();
     }
@@ -189,16 +178,23 @@ public class MainController extends TemplateController {
                     if (Is.validString(responseToken.getAccessToken())) {
                         switch (getSearchType()) {
                             case GALLERY_ALL:
+                                getTabPaneTermsController().addUser(getTextFieldTerm().getText());
                                 tryGetGalleryAll();
                                 break;
                             case BROWSE_NEWEST:
+                                // TODO: de momento agrega un usuario, pero debe ser un term.
+                                getTabPaneTermsController().addUser(getTextFieldTerm().getText());
                                 tryGetBrowseNewest();
                                 break;
                             case BROWSE_POPULAR:
+                                // TODO: de momento agrega un usuario, pero debe ser un term.
+                                getTabPaneTermsController().addUser(getTextFieldTerm().getText());
                                 tryGetBrowsePopular();
                                 break;
-                            case BROWSE_RECOMMENDED:
-                                tryGetBrowseRecommended();
+                            case BROWSE_UNDISCOVERED:
+                                // TODO: de momento agrega un usuario, pero debe ser un term.
+                                getTabPaneTermsController().addUser(getTextFieldTerm().getText());
+                                tryGetBrowseUndiscovered();
                                 break;
                         }
                     }
@@ -361,16 +357,17 @@ public class MainController extends TemplateController {
         });
     }
 
-    private void tryGetBrowseRecommended() {
+    private void tryGetBrowseUndiscovered() {
         // TODO: no hace falta el term.
         getProgressBarLoadingByTerm().setVisible(true);
 
         // TODO: agregar mature content al formulario (checkbox).
         HashMap<String, String> params = new HashMap();
+        params.put("category_path ", "");
         params.put("offset", String.valueOf(getOffset()));
         params.put("limit", String.valueOf(10));
         params.put("mature_content", "true");
-        DeviantartRestRequest.getInstance().getBrowseRecommended(params, new RestRequestCallbackInterface() {
+        DeviantartRestRequest.getInstance().getBrowseUndiscovered(params, new RestRequestCallbackInterface() {
             @Override
             public void success(Call call, String response) {
                 ResponseDocuments responseDocuments = Json.parse(ResponseDocuments.class, response);
@@ -385,7 +382,7 @@ public class MainController extends TemplateController {
 
                 if (responseDocuments.getHasMore() && responseDocuments.getNextOffset() <= getOffsetMaximum()) {
                     setOffset(responseDocuments.getNextOffset());
-                    tryGetBrowseRecommended();
+                    tryGetBrowseUndiscovered();
 
                 } else {
                     getProgressBarLoadingByTerm().setVisible(false);

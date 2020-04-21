@@ -37,7 +37,8 @@ public class DeviantartRestRequest extends CoreRestRequest {
         GALLERY_ALL("gallery/all"),
         BROWSE_NEWEST("browse/newest"),
         BROWSE_POPULAR("browse/popular"),
-        BROWSE_RECOMMENDED("browse/recommended");
+        BROWSE_UNDISCOVERED("browse/undiscovered"),
+        PROFILE("user/profile/%s");
 
         private final String entity;
 
@@ -71,7 +72,7 @@ public class DeviantartRestRequest extends CoreRestRequest {
     protected Map<String, String> getHeaders() {
         Map<String, String> headers = new HashMap<>();
         if (responseToken != null) {
-            headers.put("Authorization", "Bearer " +  responseToken.getAccessToken());
+            headers.put("Authorization", "Bearer " + responseToken.getAccessToken());
         }
         return headers;
     }
@@ -126,8 +127,15 @@ public class DeviantartRestRequest extends CoreRestRequest {
         get(ENTITIES.BROWSE_POPULAR.getEntity(), params, restRequestCallbackInterface);
     }
 
-    public void getBrowseRecommended(Map<String, String> params, RestRequestCallbackInterface restRequestCallbackInterface) {
-        get(ENTITIES.BROWSE_RECOMMENDED.getEntity(), params, restRequestCallbackInterface);
+    public void getBrowseUndiscovered(Map<String, String> params, RestRequestCallbackInterface restRequestCallbackInterface) {
+        get(ENTITIES.BROWSE_UNDISCOVERED.getEntity(), params, restRequestCallbackInterface);
+    }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    public void getProfile(String username, Map<String, String> params, RestRequestCallbackInterface restRequestCallbackInterface) {
+        String url = String.format(ENTITIES.PROFILE.getEntity(), username);
+        get(url, params, restRequestCallbackInterface);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/

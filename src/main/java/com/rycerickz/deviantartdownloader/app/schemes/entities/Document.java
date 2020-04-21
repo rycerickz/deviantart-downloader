@@ -7,6 +7,7 @@ package com.rycerickz.deviantartdownloader.app.schemes.entities;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.io.FilenameUtils;
@@ -83,10 +84,6 @@ public class Document {
     @Expose
     @SerializedName("content")
     private File content;
-
-    /*----------------------------------------------------------------------------------------------------------------*/
-
-    private Image image;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 

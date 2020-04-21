@@ -6,16 +6,24 @@ package com.rycerickz.deviantartdownloader.app.controllers;
 
 import com.jfoenix.controls.JFXMasonryPane;
 import com.jfoenix.controls.JFXScrollPane;
+import com.rycerickz.deviantartdownloader.app.components.Generate;
+import com.rycerickz.deviantartdownloader.app.components.apis.DeviantartRestRequest;
 import com.rycerickz.deviantartdownloader.app.schemes.EntityManager;
 import com.rycerickz.deviantartdownloader.app.schemes.entities.Document;
+import com.rycerickz.deviantartdownloader.app.schemes.entities.ResponseDocuments;
+import com.rycerickz.deviantartdownloader.app.schemes.entities.ResponseProfile;
 import com.rycerickz.deviantartdownloader.app.schemes.properties.User;
+import com.rycerickz.deviantartdownloader.core.components.Json;
+import com.rycerickz.deviantartdownloader.core.components.Logs;
+import com.rycerickz.deviantartdownloader.core.interfaces.RestRequestCallbackInterface;
 import com.rycerickz.deviantartdownloader.core.templates.TemplateController;
-import de.jensd.fx.glyphs.GlyphsDude;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.Image;
@@ -25,6 +33,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import lombok.Getter;
 import lombok.Setter;
+import okhttp3.Call;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -32,11 +41,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.rycerickz.deviantartdownloader.MainConfiguration.DEFAULT_DOWNLOAD_FOLDER;
-import static de.jensd.fx.glyphs.fontawesome.FontAwesomeIcons.FOLDER;
-import static de.jensd.fx.glyphs.fontawesome.FontAwesomeIcons.SAVE;
-import static javafx.scene.control.ContentDisplay.CENTER;
+import static com.rycerickz.deviantartdownloader.app.components.Icons.FA_FOLDER;
+import static com.rycerickz.deviantartdownloader.app.components.Icons.FA_SAVE;
+import static javafx.geometry.Pos.CENTER;
 
 /*====================================================================================================================*/
 
@@ -49,14 +59,31 @@ public class AnchorPaneUserController extends TemplateController {
     @FXML
     private AnchorPane anchorPaneUser;
 
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     @FXML
     private TreeTableView<Document> treeTableViewDocuments;
+
+    /*----------------------------------------------------------------------------------------------------------------*/
 
     @FXML
     private ScrollPane scrollPaneGallery;
 
     @FXML
     private JFXMasonryPane jfxMasonryPaneGallery;
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    @FXML
+    private ImageView imageViewAvatar;
+
+    @FXML
+    private Label labelUsername;
+
+    @FXML
+    private Label labelDeviations;
+
+    /*----------------------------------------------------------------------------------------------------------------*/
 
     @FXML
     private TextField textFieldSaveDirectory;
@@ -76,8 +103,6 @@ public class AnchorPaneUserController extends TemplateController {
 
     private TreeItem treeItemRoot;
 
-    private ArrayList<Image> images;
-
     private ObjectProperty<User> user;
 
     private String defaultDirectory;
@@ -88,10 +113,9 @@ public class AnchorPaneUserController extends TemplateController {
     protected void initializeVariables() {
         super.initializeVariables();
 
-        setImages(new ArrayList<>());
-
         setUser(new SimpleObjectProperty<>());
         getUser().addListener((observableValue, oldUser, newUser) -> {
+            getLabelUsername().setText(newUser.getUsername().get());
             getTextFieldSaveDirectory().setText(getDefaultDirectory() + newUser.getUsername().get());
 
             newUser.getDocuments().addListener((ListChangeListener<Document>) change -> {
@@ -108,9 +132,11 @@ public class AnchorPaneUserController extends TemplateController {
                     }
                 }
             });
+
+            tryGetProfile();
         });
 
-        setDefaultDirectory(Paths.get("").toAbsolutePath().toString() + "\\" +  DEFAULT_DOWNLOAD_FOLDER );
+        setDefaultDirectory(Paths.get("").toAbsolutePath().toString() + "\\" + DEFAULT_DOWNLOAD_FOLDER);
     }
 
     @Override
@@ -119,21 +145,8 @@ public class AnchorPaneUserController extends TemplateController {
 
         initializeTreeTableViewDocuments();
 
-        Label iconFolder = GlyphsDude.createIconLabel(
-                FOLDER,
-                "",
-                "12px",
-                "12px",
-                CENTER);
-        getButtonDirectoryChooser().setGraphic(iconFolder);
-
-        Label iconSave = GlyphsDude.createIconLabel(
-                SAVE,
-                "",
-                "12px",
-                "12px",
-                CENTER);
-        getButtonSave().setGraphic(iconSave);
+        getButtonDirectoryChooser().setGraphic(FA_FOLDER);
+        getButtonSave().setGraphic(FA_SAVE);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -156,9 +169,49 @@ public class AnchorPaneUserController extends TemplateController {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    private void tryGetProfile() {
+        // TODO: agregar un loading.
+
+        HashMap<String, String> params = new HashMap();
+        params.put("ext_collections", "no");
+        params.put("ext_galleries", "no");
+        params.put("mature_content", "true");
+
+        DeviantartRestRequest.getInstance().getProfile(
+                getUser().get().getUsername().get(),
+                params,
+                new RestRequestCallbackInterface() {
+            @Override
+            public void success(Call call, String response) {
+                ResponseProfile responseProfile = Json.parse(ResponseProfile.class, response);
+
+                Image image = new Image(responseProfile.getUser().getIcon());
+                String deviations = String.format("%d Deviations.", responseProfile.getStats().getDeviations());
+
+                Platform.runLater(() -> {
+                    getImageViewAvatar().setImage(image);
+                    getLabelDeviations().setText(deviations);
+                });
+            }
+
+            @Override
+            public void error(Call call, String response) {
+                Logs.error(response);
+                // TODO: manejar respuesta.
+            }
+
+            @Override
+            public void response(Call call, byte[] bytes) {
+                // TODO: manejar respuesta.
+            }
+        });
+    }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     public void actionDirectoryChooser() {
         File file = new File(getDefaultDirectory());
-        if(!file.exists()){
+        if (!file.exists()) {
             file.mkdirs();
         }
 
@@ -206,34 +259,18 @@ public class AnchorPaneUserController extends TemplateController {
                 TreeItem<Document> treeItemDocument = new TreeItem<>(document);
                 getTreeItemRoot().getChildren().add(treeItemDocument);
 
-                getImages().add(image);
-                document.setImage(image);
-
-                double ratio = image.getWidth() / image.getHeight();
-
-                double width = Math.min(Math.min(image.getWidth(), 300), image.getWidth() / ratio);
-                double height = Math.min(Math.min(image.getHeight(), 300), image.getHeight() / ratio);
-
-                ImageView imageView = new ImageView(image);
-                imageView.setFitWidth(width);
-                imageView.setFitHeight(height);
-                imageView.setPreserveRatio(true);
-
-                BorderPane borderPane = new BorderPane();
-                borderPane.setStyle("-fx-background-color: #dddddd");
-                borderPane.setPrefSize(width, height);
-                borderPane.setCenter(imageView);
-
-                getJfxMasonryPaneGallery().getChildren().add(borderPane);
-
-                getJfxMasonryPaneGallery().setHSpacing(10);
-                getJfxMasonryPaneGallery().setVSpacing(10);
+                getJfxMasonryPaneGallery().getChildren()
+                        .add(Generate.generateBorderPaneGallery(document, image));
 
                 getScrollPaneGallery().requestLayout();
                 JFXScrollPane.smoothScrolling(getScrollPaneGallery());
             });
         }).start();
     }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+
 
     /*----------------------------------------------------------------------------------------------------------------*/
 }

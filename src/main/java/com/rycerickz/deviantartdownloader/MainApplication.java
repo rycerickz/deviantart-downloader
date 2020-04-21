@@ -67,6 +67,10 @@ public class MainApplication extends TemplateApplication {
         fxmlLoader.setLocation(getClass().getResource("/layouts/application_main.fxml"));
         setBorderPaneMain(fxmlLoader.load());
 
+        getBorderPaneMain()
+                .getStylesheets()
+                .add(getClass().getResource("/styles/application-main.css").toExternalForm());
+
         Scene scene = new Scene(getBorderPaneMain());
         getMainStage().setScene(scene);
 

@@ -83,7 +83,7 @@
                                         <ToggleGroup fx:id="type" />
                                     </toggleGroup>
                                 </ToggleButton>
-                                <ToggleButton fx:id="toggleButtonBrowseRecommended" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#actionToggleButtonBrowseRecommended" text="Recomendado" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                                <ToggleButton fx:id="toggleButtonBrowseUndiscovered" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#actionToggleButtonBrowseUndiscovered" text="Sin descubrir" GridPane.columnIndex="3" GridPane.rowIndex="0">
                                     <toggleGroup>
                                         <ToggleGroup fx:id="type" />
                                     </toggleGroup>
