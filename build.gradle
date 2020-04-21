@@ -38,6 +38,12 @@ dependencies {
     // JFoenix.
     implementation 'com.jfoenix:jfoenix:8.0.8'
 
+    // FontAwesomeFX.
+    implementation 'de.jensd:fontawesomefx:8.2'
+
+    // Apache Commons IO.
+    implementation 'commons-io:commons-io:2.6'
+
     //================================================================================================================//
 
 }

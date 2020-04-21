@@ -10,24 +10,32 @@ import com.rycerickz.deviantartdownloader.app.schemes.EntityManager;
 import com.rycerickz.deviantartdownloader.app.schemes.entities.Document;
 import com.rycerickz.deviantartdownloader.app.schemes.properties.User;
 import com.rycerickz.deviantartdownloader.core.templates.TemplateController;
+import de.jensd.fx.glyphs.GlyphsDude;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.DirectoryChooser;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+
+import static de.jensd.fx.glyphs.fontawesome.FontAwesomeIcons.FOLDER;
+import static de.jensd.fx.glyphs.fontawesome.FontAwesomeIcons.SAVE;
+import static javafx.scene.control.ContentDisplay.CENTER;
 
 /*====================================================================================================================*/
 
@@ -44,10 +52,19 @@ public class AnchorPaneUserController extends TemplateController {
     private TreeTableView<Document> treeTableViewDocuments;
 
     @FXML
+    private ScrollPane scrollPaneGallery;
+
+    @FXML
     private JFXMasonryPane jfxMasonryPaneGallery;
 
     @FXML
-    private ScrollPane scrollPaneGallery;
+    private TextField textFieldSaveDirectory;
+
+    @FXML
+    private Button buttonDirectoryChooser;
+
+    @FXML
+    private Button buttonSave;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -56,11 +73,13 @@ public class AnchorPaneUserController extends TemplateController {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    private TreeItem treeItemRoot;
+
     private ArrayList<Image> images;
 
     private ObjectProperty<User> user;
 
-    private TreeItem treeItemRoot;
+    private String defaultDirectory;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -72,6 +91,8 @@ public class AnchorPaneUserController extends TemplateController {
 
         setUser(new SimpleObjectProperty<>());
         getUser().addListener((observableValue, oldUser, newUser) -> {
+            getTextFieldSaveDirectory().setText(defaultDirectory + "\\" + newUser.getUsername().get());
+
             newUser.getDocuments().addListener((ListChangeListener<Document>) change -> {
                 while (change.next()) {
                     if (change.wasAdded()) {
@@ -87,13 +108,34 @@ public class AnchorPaneUserController extends TemplateController {
                 }
             });
         });
+
+        setDefaultDirectory(Paths.get("").toAbsolutePath().toString());
     }
 
     @Override
     protected void initializeViews() {
         super.initializeViews();
+
         initializeTreeTableViewDocuments();
+
+        Label iconFolder = GlyphsDude.createIconLabel(
+                FOLDER,
+                "",
+                "12px",
+                "12px",
+                CENTER);
+        getButtonDirectoryChooser().setGraphic(iconFolder);
+
+        Label iconSave = GlyphsDude.createIconLabel(
+                SAVE,
+                "",
+                "12px",
+                "12px",
+                CENTER);
+        getButtonSave().setGraphic(iconSave);
     }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
 
     private void initializeTreeTableViewDocuments() {
         setTreeTableColumnName(new TreeTableColumn<>("Nombre"));
@@ -113,9 +155,46 @@ public class AnchorPaneUserController extends TemplateController {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    public void actionDirectoryChooser() {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setInitialDirectory(new File(getDefaultDirectory()));
+
+        File selectedDirectory = directoryChooser.showDialog(null);
+
+        getTextFieldSaveDirectory().setText(selectedDirectory.toString());
+    }
+
+    public void actionSave() {
+        // TODO: bloquear la pantalla y poner un progressbar.
+        new Thread(() -> {
+            getUser().get().getDocuments().forEach(document -> {
+                if (document.getIsDownloadable()) {
+                    try {
+                        // TODO: hacer que el nombre del archivo sea configurable.
+
+                        String username = getUser().get().getUsername().get();
+                        String filename = document.getFilename();
+
+                        String fullFilename = "By " + username + " - " + filename;
+
+                        File file = new File(getTextFieldSaveDirectory().getText() + "\\" + fullFilename);
+
+                        URL url = new URL(document.getContent().getSrc());
+                        FileUtils.copyURLToFile(url, file);
+
+                    } catch (IOException iOException) {
+                        // TODO: hacer un logs de los que no se lograron guardar.
+                    }
+                }
+            });
+        }).start();
+    }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     private void addDocument(Document document) {
         new Thread(() -> {
-            Image image = new Image(document.getPreview().getSrc());
+            Image image = new Image(document.getFile().getSrc());
 
             Platform.runLater(() -> {
                 TreeItem<Document> treeItemDocument = new TreeItem<>(document);

@@ -2,6 +2,7 @@
 
 <?import com.jfoenix.controls.JFXMasonryPane?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
@@ -10,6 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
@@ -28,7 +30,7 @@
                 </AnchorPane>
                 <VBox>
                     <children>
-                        <GridPane hgap="10.0" minHeight="40.0" vgap="10.0">
+                        <GridPane hgap="10.0" minHeight="36.0" prefHeight="36.0" vgap="10.0">
                             <columnConstraints>
                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="100" minWidth="0.0" prefWidth="100.0" />
                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="380" />
@@ -42,7 +44,13 @@
                                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                     </padding>
                                 </Label>
-                                <TextField fx:id="textFieldSaveDirectory" prefWidth="600.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1">
+                           <children>
+                              <TextField fx:id="textFieldSaveDirectory" prefWidth="600.0" />
+                              <Button fx:id="buttonDirectoryChooser" mnemonicParsing="false" onAction="#actionDirectoryChooser" />
+                              <Button fx:id="buttonSave" mnemonicParsing="false" onAction="#actionSave" />
+                           </children>
+                        </HBox>
                             </children>
                      <padding>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

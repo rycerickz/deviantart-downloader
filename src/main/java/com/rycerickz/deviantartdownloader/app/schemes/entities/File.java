@@ -6,9 +6,6 @@ package com.rycerickz.deviantartdownloader.app.schemes.entities;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.StringProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,11 +13,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Preview {
+public class File {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    private static final String TAG = Preview.class.getSimpleName();
+    private static final String TAG = File.class.getSimpleName();
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -39,6 +36,10 @@ public class Preview {
     @Expose
     @SerializedName("transparency")
     private Boolean transparency;
+
+    @Expose
+    @SerializedName("filesize")
+    private Integer size;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 

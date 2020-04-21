@@ -6,11 +6,12 @@ package com.rycerickz.deviantartdownloader.app.schemes.entities;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.io.FilenameUtils;
+
+import static com.rycerickz.deviantartdownloader.MainConfiguration.PATTERN_ILLEGAL_CHARACTERS;
 
 
 /*====================================================================================================================*/
@@ -55,19 +56,19 @@ public class Document {
 
     @Expose
     @SerializedName("is_mature")
-    private String isMature;
+    private Boolean isMature;
 
     @Expose
     @SerializedName("is_downloadable")
-    private String isDownloadable;
+    private Boolean isDownloadable;
 
     @Expose
     @SerializedName("is_favourited")
-    private String isFavourited;
+    private Boolean isFavourited;
 
     @Expose
     @SerializedName("is_deleted")
-    private String isDeleted;
+    private Boolean isDeleted;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -77,11 +78,25 @@ public class Document {
 
     @Expose
     @SerializedName("preview")
-    private Preview preview;
+    private File file;
+
+    @Expose
+    @SerializedName("content")
+    private File content;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
     private Image image;
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    public String getFilename() {
+        return getTitle().replaceAll(PATTERN_ILLEGAL_CHARACTERS, "") + getExtension();
+    }
+
+    public String getExtension() {
+        return "." + FilenameUtils.getExtension(getContent().getSrc().split("\\?")[0]);
+    }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
