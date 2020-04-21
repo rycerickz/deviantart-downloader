@@ -33,6 +33,7 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import static com.rycerickz.deviantartdownloader.MainConfiguration.DEFAULT_DOWNLOAD_FOLDER;
 import static de.jensd.fx.glyphs.fontawesome.FontAwesomeIcons.FOLDER;
 import static de.jensd.fx.glyphs.fontawesome.FontAwesomeIcons.SAVE;
 import static javafx.scene.control.ContentDisplay.CENTER;
@@ -91,7 +92,7 @@ public class AnchorPaneUserController extends TemplateController {
 
         setUser(new SimpleObjectProperty<>());
         getUser().addListener((observableValue, oldUser, newUser) -> {
-            getTextFieldSaveDirectory().setText(defaultDirectory + "\\" + newUser.getUsername().get());
+            getTextFieldSaveDirectory().setText(getDefaultDirectory() + newUser.getUsername().get());
 
             newUser.getDocuments().addListener((ListChangeListener<Document>) change -> {
                 while (change.next()) {
@@ -109,7 +110,7 @@ public class AnchorPaneUserController extends TemplateController {
             });
         });
 
-        setDefaultDirectory(Paths.get("").toAbsolutePath().toString());
+        setDefaultDirectory(Paths.get("").toAbsolutePath().toString() + "\\" +  DEFAULT_DOWNLOAD_FOLDER );
     }
 
     @Override
@@ -156,8 +157,13 @@ public class AnchorPaneUserController extends TemplateController {
     /*----------------------------------------------------------------------------------------------------------------*/
 
     public void actionDirectoryChooser() {
+        File file = new File(getDefaultDirectory());
+        if(!file.exists()){
+            file.mkdirs();
+        }
+
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setInitialDirectory(new File(getDefaultDirectory()));
+        directoryChooser.setInitialDirectory(file);
 
         File selectedDirectory = directoryChooser.showDialog(null);
 
