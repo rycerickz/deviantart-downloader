@@ -4,11 +4,9 @@ package com.rycerickz.deviantartdownloader.core.components;
 
 /*====================================================================================================================*/
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.HashMap;
+import com.rycerickz.deviantartdownloader.app.schemes.entities.Document;
+
 import java.util.Map;
-import java.util.Map.Entry;
 
 /*====================================================================================================================*/
 
@@ -21,7 +19,7 @@ public class Logs {
     /*----------------------------------------------------------------------------------------------------------------*/
 
     protected static void restUrl(String url) {
-      System.out.println("REST URL => " + url);
+        System.out.println("REST URL => " + url);
     }
 
     protected static void restParams(Map<String, String> params) {
@@ -42,6 +40,15 @@ public class Logs {
 
     public static void error(String error) {
         System.err.println("ERROR => " + error);
+    }
+
+    public static void document(Document document) {
+        if (document == null || document.getContent() == null || !Is.validString(document.getContent().getSrc())) {
+            System.err.println("DOCUMENT => " + document.getIdDeviation());
+
+        } else {
+            System.out.println("DOCUMENT => " + document.getTitle() + " => " + document.getContent().getSrc());
+        }
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/

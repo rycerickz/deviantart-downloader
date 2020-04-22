@@ -18,6 +18,11 @@ import lombok.Setter;
 import java.io.IOException;
 
 /*====================================================================================================================*/
+// TODO:
+// 1) Hacer un loader al descargar.
+// 2) Hay documents que no se pueden descargar, debe haber un log que indique cuales documentos se descargaron y cuales no.
+// 3) En el mismo tree view, se puede poner un check que indique si se descargo o no.
+/*====================================================================================================================*/
 
 @Getter
 @Setter

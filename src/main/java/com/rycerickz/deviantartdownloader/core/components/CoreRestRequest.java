@@ -10,9 +10,6 @@ import lombok.Getter;
 import lombok.Setter;
 import okhttp3.*;
 import okhttp3.Request.Builder;
-import okio.BufferedSink;
-import okio.Okio;
-import okio.Source;
 
 import java.io.*;
 import java.net.URLEncoder;
@@ -22,7 +19,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import static com.rycerickz.deviantartdownloader.MainConfiguration.IS_DEBUG;
-import static java.lang.Long.MAX_VALUE;
 
 /*====================================================================================================================*/
 

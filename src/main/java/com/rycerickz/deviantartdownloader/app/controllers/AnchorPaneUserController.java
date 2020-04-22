@@ -10,9 +10,9 @@ import com.rycerickz.deviantartdownloader.app.components.Generate;
 import com.rycerickz.deviantartdownloader.app.components.apis.DeviantartRestRequest;
 import com.rycerickz.deviantartdownloader.app.schemes.EntityManager;
 import com.rycerickz.deviantartdownloader.app.schemes.entities.Document;
-import com.rycerickz.deviantartdownloader.app.schemes.entities.ResponseDocuments;
 import com.rycerickz.deviantartdownloader.app.schemes.entities.ResponseProfile;
 import com.rycerickz.deviantartdownloader.app.schemes.properties.User;
+import com.rycerickz.deviantartdownloader.core.components.Is;
 import com.rycerickz.deviantartdownloader.core.components.Json;
 import com.rycerickz.deviantartdownloader.core.components.Logs;
 import com.rycerickz.deviantartdownloader.core.interfaces.RestRequestCallbackInterface;
@@ -22,14 +22,11 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,13 +37,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.rycerickz.deviantartdownloader.MainConfiguration.DEFAULT_DOWNLOAD_FOLDER;
 import static com.rycerickz.deviantartdownloader.app.components.Icons.FA_FOLDER;
 import static com.rycerickz.deviantartdownloader.app.components.Icons.FA_SAVE;
-import static javafx.geometry.Pos.CENTER;
 
 /*====================================================================================================================*/
 
@@ -253,6 +248,15 @@ public class AnchorPaneUserController extends TemplateController {
 
     private void addDocument(Document document) {
         new Thread(() -> {
+
+            // TODO: comentar.
+            if (document == null || document.getContent() == null || !Is.validString(document.getContent().getSrc())) {
+                System.err.println("DOCUMENT => " + document.getIdDeviation());
+
+            } else {
+                System.out.println("DOCUMENT => " + document.getTitle() + " => " + document.getContent().getSrc());
+            }
+
             Image image = new Image(document.getFile().getSrc());
 
             Platform.runLater(() -> {
