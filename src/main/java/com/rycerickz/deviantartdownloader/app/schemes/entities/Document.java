@@ -6,13 +6,12 @@ package com.rycerickz.deviantartdownloader.app.schemes.entities;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.io.FilenameUtils;
 
 import static com.rycerickz.deviantartdownloader.MainConfiguration.PATTERN_ILLEGAL_CHARACTERS;
+import static com.rycerickz.deviantartdownloader.app.schemes.entities.Document.DOCUMENT_DOWNLAOD_STATUS.UNKNOWN;
 
 
 /*====================================================================================================================*/
@@ -24,6 +23,14 @@ public class Document {
     /*----------------------------------------------------------------------------------------------------------------*/
 
     private static final String TAG = Document.class.getSimpleName();
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    public enum DOCUMENT_DOWNLAOD_STATUS {
+        UNKNOWN,
+        DOWNLOADED,
+        ERROR
+    }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -87,12 +94,25 @@ public class Document {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    private DOCUMENT_DOWNLAOD_STATUS documentDownlaodStatus;
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     public String getFilename() {
         return getTitle().replaceAll(PATTERN_ILLEGAL_CHARACTERS, "") + getExtension();
     }
 
     public String getExtension() {
         return "." + FilenameUtils.getExtension(getContent().getSrc().split("\\?")[0]);
+    }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    public DOCUMENT_DOWNLAOD_STATUS getDocumentDownlaodStatus() {
+        if (documentDownlaodStatus == null) {
+            documentDownlaodStatus = UNKNOWN;
+        }
+        return documentDownlaodStatus;
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/

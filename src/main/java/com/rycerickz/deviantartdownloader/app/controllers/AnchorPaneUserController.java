@@ -6,7 +6,9 @@ package com.rycerickz.deviantartdownloader.app.controllers;
 
 import com.jfoenix.controls.JFXMasonryPane;
 import com.jfoenix.controls.JFXScrollPane;
+import com.rycerickz.deviantartdownloader.app.cells.TreeTableCellDocumentDownloadStatus;
 import com.rycerickz.deviantartdownloader.app.components.Generate;
+import com.rycerickz.deviantartdownloader.app.components.Icons;
 import com.rycerickz.deviantartdownloader.app.components.apis.DeviantartRestRequest;
 import com.rycerickz.deviantartdownloader.app.schemes.EntityManager;
 import com.rycerickz.deviantartdownloader.app.schemes.entities.Document;
@@ -21,11 +23,17 @@ import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import lombok.Getter;
@@ -38,10 +46,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import static com.rycerickz.deviantartdownloader.MainConfiguration.DEFAULT_DOWNLOAD_FOLDER;
-import static com.rycerickz.deviantartdownloader.app.components.Icons.FA_FOLDER;
-import static com.rycerickz.deviantartdownloader.app.components.Icons.FA_SAVE;
+import static com.rycerickz.deviantartdownloader.app.schemes.entities.Document.DOCUMENT_DOWNLAOD_STATUS.DOWNLOADED;
+import static com.rycerickz.deviantartdownloader.app.schemes.entities.Document.DOCUMENT_DOWNLAOD_STATUS.ERROR;
+import static com.rycerickz.deviantartdownloader.app.schemes.entities.Document.DOCUMENT_DOWNLAOD_STATUS;
 
 /*====================================================================================================================*/
 
@@ -91,8 +101,10 @@ public class AnchorPaneUserController extends TemplateController {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    private TreeTableColumn<Document, String> treeTableColumnId;
     private TreeTableColumn<Document, String> treeTableColumnName;
     private TreeTableColumn<Document, String> treeTableColumnCategory;
+    private TreeTableColumn<Document, DOCUMENT_DOWNLAOD_STATUS> treeTableColumnDownloadStatus;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -140,21 +152,33 @@ public class AnchorPaneUserController extends TemplateController {
 
         initializeTreeTableViewDocuments();
 
-        getButtonDirectoryChooser().setGraphic(FA_FOLDER);
-        getButtonSave().setGraphic(FA_SAVE);
+        getButtonDirectoryChooser().setGraphic(Icons.getFaFolder());
+        getButtonSave().setGraphic(Icons.getFaSave());
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
     private void initializeTreeTableViewDocuments() {
+        setTreeTableColumnId(new TreeTableColumn<>("ID"));
         setTreeTableColumnName(new TreeTableColumn<>("Nombre"));
         setTreeTableColumnCategory(new TreeTableColumn<>("Categor\u00EDa"));
+        setTreeTableColumnDownloadStatus(new TreeTableColumn<>("Estado de descarga"));
 
+        getTreeTableColumnId().setCellValueFactory(new TreeItemPropertyValueFactory<>("idDeviation"));
         getTreeTableColumnName().setCellValueFactory(new TreeItemPropertyValueFactory<>("title"));
         getTreeTableColumnCategory().setCellValueFactory(new TreeItemPropertyValueFactory<>("category"));
+        getTreeTableColumnDownloadStatus().setCellValueFactory(new TreeItemPropertyValueFactory<>("documentDownlaodStatus"));
 
+        getTreeTableColumnDownloadStatus().setCellFactory(StdocumentringTreeTableColumn -> {
+            TreeTableCellDocumentDownloadStatus treeTableCellDocumentDownloadStatus = new TreeTableCellDocumentDownloadStatus();
+            treeTableCellDocumentDownloadStatus.setStyle("-fx-alignment: center");
+            return treeTableCellDocumentDownloadStatus;
+        });
+
+        getTreeTableViewDocuments().getColumns().add(getTreeTableColumnId());
         getTreeTableViewDocuments().getColumns().add(getTreeTableColumnName());
         getTreeTableViewDocuments().getColumns().add(getTreeTableColumnCategory());
+        getTreeTableViewDocuments().getColumns().add(getTreeTableColumnDownloadStatus());
 
         setTreeItemRoot(new TreeItem(EntityManager.getDocumentRoot()));
         getTreeItemRoot().setExpanded(true);
@@ -176,30 +200,30 @@ public class AnchorPaneUserController extends TemplateController {
                 getUser().get().getUsername().get(),
                 params,
                 new RestRequestCallbackInterface() {
-            @Override
-            public void success(Call call, String response) {
-                ResponseProfile responseProfile = Json.parse(ResponseProfile.class, response);
+                    @Override
+                    public void success(Call call, String response) {
+                        ResponseProfile responseProfile = Json.parse(ResponseProfile.class, response);
 
-                Image image = new Image(responseProfile.getUser().getIcon());
-                String deviations = String.format("%d Deviations.", responseProfile.getStats().getDeviations());
+                        Image image = new Image(responseProfile.getUser().getIcon());
+                        String deviations = String.format("%d Deviations.", responseProfile.getStats().getDeviations());
 
-                Platform.runLater(() -> {
-                    getImageViewAvatar().setImage(image);
-                    getLabelDeviations().setText(deviations);
+                        Platform.runLater(() -> {
+                            getImageViewAvatar().setImage(image);
+                            getLabelDeviations().setText(deviations);
+                        });
+                    }
+
+                    @Override
+                    public void error(Call call, String response) {
+                        Logs.error(response);
+                        // TODO: manejar respuesta.
+                    }
+
+                    @Override
+                    public void response(Call call, byte[] bytes) {
+                        // TODO: manejar respuesta.
+                    }
                 });
-            }
-
-            @Override
-            public void error(Call call, String response) {
-                Logs.error(response);
-                // TODO: manejar respuesta.
-            }
-
-            @Override
-            public void response(Call call, byte[] bytes) {
-                // TODO: manejar respuesta.
-            }
-        });
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -220,8 +244,9 @@ public class AnchorPaneUserController extends TemplateController {
 
     public void actionSave() {
         // TODO: bloquear la pantalla y poner un progressbar.
-        new Thread(() -> {
-            getUser().get().getDocuments().forEach(document -> {
+        getUser().get().getDocuments().forEach(document -> {
+            new Thread(() -> {
+
                 if (document.getIsDownloadable()) {
                     try {
                         // TODO: hacer que el nombre del archivo sea configurable.
@@ -236,12 +261,21 @@ public class AnchorPaneUserController extends TemplateController {
                         URL url = new URL(document.getContent().getSrc());
                         FileUtils.copyURLToFile(url, file);
 
+                        document.setDocumentDownlaodStatus(DOWNLOADED);
+
                     } catch (IOException iOException) {
+                        document.setDocumentDownlaodStatus(ERROR);
                         // TODO: hacer un logs de los que no se lograron guardar.
                     }
+
+                } else {
+                    document.setDocumentDownlaodStatus(ERROR);
                 }
-            });
-        }).start();
+
+                Platform.runLater(() -> getTreeTableViewDocuments().refresh());
+
+            }).start();
+        });
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -249,7 +283,7 @@ public class AnchorPaneUserController extends TemplateController {
     private void addDocument(Document document) {
         new Thread(() -> {
 
-            // TODO: comentar.
+            // TODO: esto esta momentaneo.
             if (document == null || document.getContent() == null || !Is.validString(document.getContent().getSrc())) {
                 System.err.println("DOCUMENT => " + document.getIdDeviation());
 
@@ -271,10 +305,6 @@ public class AnchorPaneUserController extends TemplateController {
             });
         }).start();
     }
-
-    /*----------------------------------------------------------------------------------------------------------------*/
-
-
 
     /*----------------------------------------------------------------------------------------------------------------*/
 }

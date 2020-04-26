@@ -24,7 +24,7 @@ public class EntityManager {
 
     public static Document getDocumentRoot() {
         Document document = new Document();
-        document.setTitle("Todos");
+        document.setIdDeviation("Todos");
         return document;
     }
 
