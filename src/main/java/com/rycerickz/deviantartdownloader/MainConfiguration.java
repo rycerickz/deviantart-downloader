@@ -37,6 +37,7 @@ public class MainConfiguration {
     public static final String DEFAULT_DOWNLOAD_FOLDER = "descargas\\";
 
     public static final int DEFAULT_OFFSET_MAXIMUM = 500;
+    public static final int DEFAULT_THREADS = 10;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 

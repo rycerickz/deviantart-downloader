@@ -53,6 +53,7 @@ public class TabPaneTermsController extends TemplateController {
         setTerms(FXCollections.observableArrayList());
         setTermSelected(new SimpleObjectProperty<>());
 
+        // TODO: cuando se elimine un tabs, se debe parar el proceso de descarga.
         getTerms().addListener((ListChangeListener<Term>) change -> {
             while (change.next()) {
                 if (change.wasAdded()) {

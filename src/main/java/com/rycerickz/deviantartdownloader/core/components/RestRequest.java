@@ -24,11 +24,11 @@ import static com.rycerickz.deviantartdownloader.MainConfiguration.IS_DEBUG;
 
 @Getter
 @Setter
-abstract public class CoreRestRequest {
+abstract public class RestRequest {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    private static final String TAG = CoreRestRequest.class.getSimpleName();
+    private static final String TAG = RestRequest.class.getSimpleName();
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -38,7 +38,7 @@ abstract public class CoreRestRequest {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    public CoreRestRequest() {
+    public RestRequest() {
         this.okHttpClient = new OkHttpClient();
     }
 

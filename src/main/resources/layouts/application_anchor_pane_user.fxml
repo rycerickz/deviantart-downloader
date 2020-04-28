@@ -34,32 +34,56 @@
                     <children>
                   <SplitPane dividerPositions="0.5" orientation="VERTICAL">
                      <items>
-                        <GridPane hgap="10.0" minHeight="56.0" prefHeight="56.0" vgap="10.0">
+                        <GridPane hgap="10.0" minHeight="60.0" prefHeight="60.0" vgap="10.0">
                            <columnConstraints>
                               <ColumnConstraints hgrow="SOMETIMES" maxWidth="100" minWidth="0.0" prefWidth="100.0" />
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="380" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="380.0" />
                            </columnConstraints>
                            <rowConstraints>
-                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <ImageView fx:id="imageViewAvatar" fitHeight="50" fitWidth="50" pickOnBounds="true" preserveRatio="true" />
-                              <VBox GridPane.columnIndex="1">
+                              <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnSpan="2">
                                  <children>
-                                    <Label fx:id="labelUsername" text="Usuario">
-                                       <font>
-                                          <Font name="System Bold" size="12.0" />
-                                       </font>
-                                    </Label>
-                                    <HBox>
+                                    <ImageView fx:id="imageViewAvatar" fitHeight="50" fitWidth="50" pickOnBounds="true" preserveRatio="true" />
+                                    <VBox alignment="CENTER_LEFT">
                                        <children>
-                                          <Label fx:id="labelDeviations" text="Deviations">
+                                          <Label fx:id="labelUsername" text="Usuario">
                                              <font>
-                                                <Font size="10.0" />
+                                                <Font name="System Bold" size="12.0" />
                                              </font>
                                           </Label>
+                                          <HBox>
+                                             <children>
+                                                <Label fx:id="labelDeviations" text="Deviations">
+                                                   <font>
+                                                      <Font size="10.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </HBox>
                                        </children>
-                                    </HBox>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2">
+                                 <children>
+                                    <Label fx:id="labelTotal" text="Total: 0">
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="labelDownloaded" text="Descargas: 0">
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="labelError" text="Errores: 0">
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font>
+                                    </Label>
                                  </children>
                               </VBox>
                            </children>
@@ -67,23 +91,30 @@
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
                         </GridPane>
-                        <GridPane alignment="CENTER_LEFT" hgap="10.0" minHeight="56.0" prefHeight="56.0" vgap="10.0">
+                        <GridPane alignment="CENTER_LEFT" hgap="10.0" minHeight="80.0" prefHeight="80.0" vgap="10.0">
                            <columnConstraints>
                               <ColumnConstraints hgrow="SOMETIMES" maxWidth="100" minWidth="0.0" prefWidth="100.0" />
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="380" />
                            </columnConstraints>
                            <rowConstraints>
-                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <Label text="Guardar en" />
-                              <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1">
+                              <Label text="Guardar en" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                              <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
                                  <children>
                                     <TextField fx:id="textFieldSaveDirectory" maxHeight="1.7976931348623157E308" prefWidth="2000.0" />
                                     <Button fx:id="buttonDirectoryChooser" mnemonicParsing="false" onAction="#actionDirectoryChooser" />
                                     <Button fx:id="buttonSave" mnemonicParsing="false" onAction="#actionSave" />
                                  </children>
                               </HBox>
+                               <Label text="Hilos" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                               <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                   <children>
+                                       <TextField fx:id="textFieldThreads" maxHeight="1.7976931348623157E308" prefWidth="2000.0" />
+                                   </children>
+                               </HBox>
                            </children>
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

@@ -5,7 +5,7 @@ package com.rycerickz.deviantartdownloader.app.components.apis;
 /*====================================================================================================================*/
 
 import com.rycerickz.deviantartdownloader.app.schemes.entities.ResponseToken;
-import com.rycerickz.deviantartdownloader.core.components.CoreRestRequest;
+import com.rycerickz.deviantartdownloader.core.components.RestRequest;
 import com.rycerickz.deviantartdownloader.core.interfaces.RestRequestCallbackInterface;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class DeviantartRestRequest extends CoreRestRequest {
+public class DeviantartRestRequest extends RestRequest {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -37,7 +37,6 @@ public class DeviantartRestRequest extends CoreRestRequest {
         GALLERY_ALL("gallery/all"),
         BROWSE_NEWEST("browse/newest"),
         BROWSE_POPULAR("browse/popular"),
-        BROWSE_UNDISCOVERED("browse/undiscovered"),
         PROFILE("user/profile/%s");
 
         private final String entity;
@@ -125,10 +124,6 @@ public class DeviantartRestRequest extends CoreRestRequest {
 
     public void getBrowsePopular(Map<String, String> params, RestRequestCallbackInterface restRequestCallbackInterface) {
         get(ENTITIES.BROWSE_POPULAR.getEntity(), params, restRequestCallbackInterface);
-    }
-
-    public void getBrowseUndiscovered(Map<String, String> params, RestRequestCallbackInterface restRequestCallbackInterface) {
-        get(ENTITIES.BROWSE_UNDISCOVERED.getEntity(), params, restRequestCallbackInterface);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/

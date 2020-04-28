@@ -40,8 +40,7 @@ public class MainController extends TemplateController {
     protected enum SEARCH_TYPE {
         GALLERY_ALL,
         BROWSE_NEWEST,
-        BROWSE_POPULAR,
-        BROWSE_UNDISCOVERED
+        BROWSE_POPULAR
     }
 
     private SEARCH_TYPE searchType;
@@ -67,9 +66,6 @@ public class MainController extends TemplateController {
 
     @FXML
     private ToggleButton toggleButtonBrowsePopular;
-
-    @FXML
-    private ToggleButton actionToggleButtonBrowseUndiscovered;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -141,10 +137,6 @@ public class MainController extends TemplateController {
         setSearchType(BROWSE_POPULAR);
     }
 
-    public void actionToggleButtonBrowseUndiscovered() {
-        setSearchType(BROWSE_UNDISCOVERED);
-    }
-
     /*----------------------------------------------------------------------------------------------------------------*/
 
     public void actionMenuClose() {
@@ -190,11 +182,6 @@ public class MainController extends TemplateController {
                                 // TODO: de momento agrega un usuario, pero debe ser un term.
                                 getTabPaneTermsController().addUser(getTextFieldTerm().getText());
                                 tryGetBrowsePopular();
-                                break;
-                            case BROWSE_UNDISCOVERED:
-                                // TODO: de momento agrega un usuario, pero debe ser un term.
-                                getTabPaneTermsController().addUser(getTextFieldTerm().getText());
-                                tryGetBrowseUndiscovered();
                                 break;
                         }
                     }
@@ -336,53 +323,6 @@ public class MainController extends TemplateController {
                 if (responseDocuments.getHasMore() && responseDocuments.getNextOffset() <= getOffsetMaximum()) {
                     setOffset(responseDocuments.getNextOffset());
                     tryGetBrowsePopular();
-
-                } else {
-                    getProgressBarLoadingByTerm().setVisible(false);
-                    setOffset(0);
-                }
-            }
-
-            @Override
-            public void error(Call call, String response) {
-                getProgressBarLoadingByTerm().setVisible(false);
-                Logs.error(response);
-                // TODO: manejar respuesta.
-            }
-
-            @Override
-            public void response(Call call, byte[] bytes) {
-                // TODO: manejar respuesta.
-            }
-        });
-    }
-
-    private void tryGetBrowseUndiscovered() {
-        // TODO: no hace falta el term.
-        getProgressBarLoadingByTerm().setVisible(true);
-
-        // TODO: agregar mature content al formulario (checkbox).
-        HashMap<String, String> params = new HashMap();
-        params.put("category_path ", "");
-        params.put("offset", String.valueOf(getOffset()));
-        params.put("limit", String.valueOf(10));
-        params.put("mature_content", "true");
-        DeviantartRestRequest.getInstance().getBrowseUndiscovered(params, new RestRequestCallbackInterface() {
-            @Override
-            public void success(Call call, String response) {
-                ResponseDocuments responseDocuments = Json.parse(ResponseDocuments.class, response);
-
-                Platform.runLater(() -> {
-                    getTabPaneTermsController()
-                            .getTermSelected()
-                            .get()
-                            .getDocuments()
-                            .addAll(responseDocuments.getDocuments());
-                });
-
-                if (responseDocuments.getHasMore() && responseDocuments.getNextOffset() <= getOffsetMaximum()) {
-                    setOffset(responseDocuments.getNextOffset());
-                    tryGetBrowseUndiscovered();
 
                 } else {
                     getProgressBarLoadingByTerm().setVisible(false);
