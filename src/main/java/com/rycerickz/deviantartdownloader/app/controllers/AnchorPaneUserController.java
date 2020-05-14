@@ -317,8 +317,18 @@ public class AnchorPaneUserController extends TemplateController {
                         String filename = document.getFilename();
 
                         String fullFilename = "By " + username + " - " + filename;
+                        String fullPath = getTextFieldSaveDirectory().getText() + "\\" + fullFilename;
 
-                        File file = new File(getTextFieldSaveDirectory().getText() + "\\" + fullFilename);
+                        File file = new File(fullPath);
+
+                        if (file.exists()) {
+                            filename = document.getFilename("-copy");
+
+                            fullFilename = "By " + username + " - " + filename;
+                            fullPath = getTextFieldSaveDirectory().getText() + "\\" + fullFilename;
+
+                            file = new File(fullPath);
+                        }
 
                         URL url = new URL(document.getContent().getSrc());
                         FileUtils.copyURLToFile(url, file);

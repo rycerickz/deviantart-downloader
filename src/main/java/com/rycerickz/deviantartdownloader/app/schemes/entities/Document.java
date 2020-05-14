@@ -99,7 +99,11 @@ public class Document {
     /*----------------------------------------------------------------------------------------------------------------*/
 
     public String getFilename() {
-        return getTitle().replaceAll(PATTERN_ILLEGAL_CHARACTERS, "") + getExtension();
+        return getFilename("");
+    }
+
+    public String getFilename(String concatenate) {
+        return getTitle().replaceAll(PATTERN_ILLEGAL_CHARACTERS, "") + concatenate + getExtension();
     }
 
     public String getExtension() {
